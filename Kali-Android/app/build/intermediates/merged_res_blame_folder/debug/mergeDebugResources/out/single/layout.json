@@ -4,6 +4,10 @@
         "source": "com.kali.app-main-49:/layout/activity_login.xml"
     },
     {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/activity_tracking.xml",
+        "source": "com.kali.app-main-49:/layout/activity_tracking.xml"
+    },
+    {
         "merged": "com.kali.app-mergeDebugResources-46:/layout/activity_register.xml",
         "source": "com.kali.app-main-49:/layout/activity_register.xml"
     },

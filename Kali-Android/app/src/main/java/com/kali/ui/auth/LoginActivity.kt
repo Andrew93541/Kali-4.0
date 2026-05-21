@@ -14,6 +14,7 @@ import com.kali.network.GoogleLoginRequest
 import com.kali.network.LoginRequest
 import com.kali.network.RetrofitClient
 import com.kali.ui.sos.SosActivity
+import com.kali.ui.sos.TrackingActivity
 import com.kali.util.SessionManager
 import kotlinx.coroutines.launch
 
@@ -112,7 +113,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun routeByRole(role: String?) {
         val intent = when (role) {
-            "Admin", "Guardian" -> Intent(this, SosActivity::class.java)
+            "Admin", "Guardian" -> Intent(this, TrackingActivity::class.java).apply {
+                putExtra("ROLE", role)
+            }
             else -> Intent(this, SosActivity::class.java)
         }
         startActivity(intent)

@@ -8,6 +8,10 @@
         "source": "com.kali.app-main-48:/layout/dialog_custom_google_input.xml"
     },
     {
+        "merged": "com.kali.app-mergeReleaseResources-46:/layout/activity_tracking.xml",
+        "source": "com.kali.app-main-48:/layout/activity_tracking.xml"
+    },
+    {
         "merged": "com.kali.app-mergeReleaseResources-46:/layout/activity_login.xml",
         "source": "com.kali.app-main-48:/layout/activity_login.xml"
     },

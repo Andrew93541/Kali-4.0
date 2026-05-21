@@ -7,12 +7,14 @@ import android.os.*
 import androidx.core.app.NotificationCompat
 import com.kali.model.KaliDatabase
 import com.kali.model.LocationEntity
+import com.kali.util.ExtendedKalmanFilter
 import kotlinx.coroutines.*
 
 class LocationService : Service(), LocationListener {
 
     private lateinit var locationManager: LocationManager
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val kalmanFilter = ExtendedKalmanFilter()
     var activeAlertLocalId: Int = -1
 
     override fun onCreate() {
@@ -23,6 +25,7 @@ class LocationService : Service(), LocationListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         activeAlertLocalId = intent?.getIntExtra("alertLocalId", -1) ?: -1
+        kalmanFilter.reset()
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L, 5f, this)
         } catch (e: SecurityException) { stopSelf() }
@@ -31,9 +34,18 @@ class LocationService : Service(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         if (activeAlertLocalId == -1) return
+        
+        // Update the Extended Kalman Filter with the raw position
+        kalmanFilter.update(location.latitude, location.longitude)
+        val filtered = kalmanFilter.getPosition()
+        
         scope.launch {
             KaliDatabase.get(applicationContext).locationDao().insert(
-                LocationEntity(alertLocalId = activeAlertLocalId, latitude = location.latitude, longitude = location.longitude)
+                LocationEntity(
+                    alertLocalId = activeAlertLocalId,
+                    latitude = filtered[0],
+                    longitude = filtered[1]
+                )
             )
             SyncWorker.enqueue(applicationContext)
         }
