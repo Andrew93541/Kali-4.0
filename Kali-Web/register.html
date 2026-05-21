@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kali – Register</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-box">
+      <h1>KALI</h1>
+      <p>Create your account</p>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="phone" placeholder="9999999999">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="role">
+          <option value="User">User (Victim)</option>
+          <option value="Guardian">Guardian (Family)</option>
+          <option value="Admin">Admin (Police)</option>
+        </select>
+      </div>
+      <button class="btn-full" onclick="doRegister()">Register</button>
+      <p class="error-msg" id="errMsg"></p>
+      <p style="text-align:center;margin-top:16px;font-size:0.85rem;color:#888">
+        Already have an account? <a href="login.html" style="color:#e91e8c">Sign In</a>
+      </p>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script>
+    async function doRegister() {
+      const name     = document.getElementById('name').value.trim();
+      const phone    = document.getElementById('phone').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const role     = document.getElementById('role').value;
+      const errEl    = document.getElementById('errMsg');
+      errEl.style.display = 'none';
+
+      if (!name || !email || !password) {
+        errEl.textContent = 'Name, email and password are required.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const res = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, email, password, role })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = 'login.html';
+      } else {
+        errEl.textContent = data.error || 'Registration failed.';
+        errEl.style.display = 'block';
+      }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="kali_pink">#E91E8C</color>
+    <color name="kali_dark">#1A1A2E</color>
+    <color name="kali_bg">#0F0F1A</color>
+    <color name="kali_surface">#16213E</color>
+    <color name="kali_text">#E0E0E0</color>
+    <color name="kali_red">#FF4444</color>
+    <color name="kali_green">#4CAF50</color>
+    <color name="white">#FFFFFF</color>
+</resources>

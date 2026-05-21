@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kali – Guardian Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    .main-grid { display: grid; grid-template-columns: 340px 1fr 340px; gap: 18px; padding: 18px; height: calc(100vh - 70px); }
+
+    /* ── Swiggy-like pulsing marker ── */
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.35); opacity: 1; }
+      80%, 100% { transform: scale(1.5); opacity: 0; }
+    }
+    @keyframes pulse-dot {
+      0%   { transform: scale(0.9); }
+      50%  { transform: scale(1.1); }
+      100% { transform: scale(0.9); }
+    }
+    .swiggy-marker {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .swiggy-marker::before {
+      content: '';
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: var(--accent-pink);
+      border-radius: 50%;
+      box-shadow: 0 0 18px var(--accent-pink-glow);
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+    }
+
+    /* ── Directional arrow inside marker ── */
+    .swiggy-marker-arrow {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 14px solid #fff;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 2;
+      position: relative;
+    }
+    .swiggy-marker-ring {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--accent-pink);
+      border-radius: 50%;
+      background: rgba(9, 9, 14, 0.65);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      animation: pulse-dot 1.2s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Connection quality indicator ── */
+    .conn-indicator {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 1000;
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      min-width: 150px;
+      box-shadow: var(--glass-shadow);
+      pointer-events: auto;
+    }
+    .conn-indicator .conn-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .conn-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .conn-dot.connected    { background: var(--color-success); color: var(--color-success); }
+    .conn-dot.disconnected { background: var(--color-danger);  color: var(--color-danger); }
+    .conn-dot.reconnecting { background: #ffc107; color: #ffc107; animation: pulse-dot 1s infinite; }
+
+    /* ── Safety Dashboard ── */
+    .safety-dashboard {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+    }
+    .safety-dashboard h3 {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .safety-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .safety-row:last-child { border-bottom: none; }
+    .safety-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .safety-value {
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      transition: color 0.4s ease, transform 0.3s ease;
+    }
+    .safety-value.highlight {
+      transform: scale(1.05);
+    }
+
+    /* ── Safety Score Ring ── */
+    .safety-score-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 14px 0;
+    }
+    .safety-score-ring {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+    .safety-score-ring svg {
+      transform: rotate(-90deg);
+    }
+    .safety-score-ring .score-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.06);
+      stroke-width: 6;
+    }
+    .safety-score-ring .score-fg {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
+    }
+    .safety-score-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      transition: color 0.5s ease;
+    }
+    .safety-score-label {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    /* ── Movement pattern badge ── */
+    .pattern-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .pattern-badge.stationary { background: rgba(0,242,254,0.15); color: var(--accent-blue); }
+    .pattern-badge.walking    { background: rgba(0,230,118,0.15); color: var(--color-success); }
+    .pattern-badge.running    { background: rgba(255,193,7,0.15); color: #ffc107; }
+    .pattern-badge.vehicle    { background: rgba(255,74,74,0.15); color: var(--color-danger); }
+
+    /* ── Geofence breach warning ── */
+    @keyframes geofence-flash {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--color-danger-glow); }
+      50%      { opacity: 0.5; box-shadow: 0 0 20px var(--color-danger-glow); }
+    }
+    .geofence-warning {
+      display: none;
+      background: rgba(255, 74, 74, 0.12);
+      border: 1px solid var(--color-danger);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--color-danger);
+      font-weight: 600;
+      animation: geofence-flash 1.2s ease-in-out infinite;
+      text-align: center;
+    }
+    .geofence-warning.visible { display: block; }
+
+    /* ── Right panel scroll helper ── */
+    .evidence-panel {
+      overflow-y: auto;
+    }
+
+    /* ── Map wrapper for indicator overlay ── */
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .map-wrapper #map {
+      border-radius: 0;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="brand">KALI</span>
+    <span class="user-info" id="userName"></span>
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="main-grid">
+    <!-- Left: Alerts List -->
+    <div class="panel">
+      <h2>Active Alerts <span class="badge-count" id="alertCount">0</span></h2>
+      <div id="alertList"></div>
+    </div>
+
+    <!-- Center: Map -->
+    <div class="map-wrapper">
+      <div id="map"></div>
+      <div class="conn-indicator" id="connIndicator">
+        <div class="conn-row">
+          <span class="conn-dot connected" id="connDot"></span>
+          <span id="connStatus">Connected</span>
+        </div>
+        <div class="conn-row" style="margin-top:2px">
+          <span style="color:var(--text-muted)">Last:</span>
+          <span id="connLastUpdate">—</span>
+        </div>
+        <div class="conn-row">
+          <span style="color:var(--text-muted)">Freq:</span>
+          <span id="connFrequency">0 upd/min</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Evidence + Safety Dashboard -->
+    <div class="panel evidence-panel">
+      <h2>Evidence</h2>
+      <div id="evidencePanel"><p style="color:#666;font-size:0.85rem">Select an alert to view evidence.</p></div>
+
+      <div class="safety-dashboard" id="safetyDashboard" style="display:none">
+        <h3>🛡 Safety Monitor</h3>
+
+        <div class="safety-score-container">
+          <div class="safety-score-ring">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle class="score-bg" cx="45" cy="45" r="38"/>
+              <circle class="score-fg" id="scoreArc" cx="45" cy="45" r="38"
+                      stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
+            </svg>
+            <span class="safety-score-number" id="safetyScoreNum">—</span>
+          </div>
+        </div>
+        <div class="safety-score-label">Safety Score</div>
+
+        <div class="safety-row">
+          <span class="safety-label">Status</span>
+          <span class="safety-value" id="safetyStatus">—</span>
+        </div>
+        <div class="safety-row">
+          <span class="safety-label">Speed</span>
+          <span class="safety-value" id="safetySpeed">—</span>
+        </div>
+        <div class="safety-row">
+          <span class="safety-label">Bearing</span>
+          <span class="safety-value" id="safetyBearing">—</span>
+        </div>
+        <div class="safety-row">
+          <span class="safety-label">Dist from SOS</span>
+          <span class="safety-value" id="safetyDist">—</span>
+        </div>
+        <div class="safety-row">
+          <span class="safety-label">Pattern</span>
+          <span class="safety-value" id="safetyPattern"><span class="pattern-badge stationary">—</span></span>
+        </div>
+        <div class="safety-row">
+          <span class="safety-label">Last Ping</span>
+          <span class="safety-value" id="safetyLastPing">—</span>
+        </div>
+
+        <div class="geofence-warning" id="geofenceWarning">⚠ Person has left the 500m safety zone!</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    /* ══════════════════════════════════════════════════════════════
+       KALI Guardian Dashboard — Advanced ML Tracking Engine
+       ══════════════════════════════════════════════════════════════ */
+
+    if (!requireAuth()) throw new Error('Unauth');
+    document.getElementById('userName').textContent = getName();
+
+    /* ── Leaflet map ── */
+    const map = L.map('map', { zoomControl: true }).setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    /* ── State stores ── */
+    const markers        = {};
+    const ekfFilters     = {};
+    const lastPositions  = {};
+    const trailCoords    = {};
+    const trailLayers    = {};
+    const predictionDots = {};
+    const geofenceCircles = {};
+    const sosOrigins     = {};
+    const animationQueues = {};
+    const animating       = {};
+    let selectedAlertId   = null;
+    let userDraggedMap    = false;
+    let userDragTimeout   = null;
+
+    /* ── Connection quality tracking ── */
+    const updateTimestamps = [];
+    let lastUpdateTs = null;
+
+    /* ── Smart auto-pan: detect manual drag ── */
+    map.on('movestart', function () {
+      userDraggedMap = true;
+      if (userDragTimeout) clearTimeout(userDragTimeout);
+      userDragTimeout = setTimeout(function () { userDraggedMap = false; }, 10000);
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       §1  MATRIX UTILITIES (4×4 for EKF)
+       ══════════════════════════════════════════════════════════════ */
+
+    function mat4Create() {
+      return [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    }
+    function mat4Identity() {
+      return [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
+    }
+    function mat4Copy(A) {
+      return A.map(function(r){ return r.slice(); });
+    }
+    function mat4Add(A, B) {
+      var C = mat4Create();
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          C[i][j] = A[i][j] + B[i][j];
+      return C;
+    }
+    function mat4Sub(A, B) {
+      var C = mat4Create();
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          C[i][j] = A[i][j] - B[i][j];
+      return C;
+    }
+    function mat4Mul(A, B) {
+      var C = mat4Create();
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          for (var k = 0; k < 4; k++)
+            C[i][j] += A[i][k] * B[k][j];
+      return C;
+    }
+    function mat4Transpose(A) {
+      var T = mat4Create();
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          T[i][j] = A[j][i];
+      return T;
+    }
+    /* Multiply 4×4 matrix by 4×1 column vector, return 4×1 array */
+    function mat4Vec(A, v) {
+      var r = [0,0,0,0];
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          r[i] += A[i][j] * v[j];
+      return r;
+    }
+
+    /* 2×2 inverse (used for the innovation covariance S) */
+    function inv2x2(m) {
+      var a = m[0][0], b = m[0][1], c = m[1][0], d = m[1][1];
+      var det = a * d - b * c;
+      if (Math.abs(det) < 1e-20) det = 1e-20;
+      var invDet = 1.0 / det;
+      return [[ d * invDet, -b * invDet],
+              [-c * invDet,  a * invDet]];
+    }
+
+    /* Multiply 4×2 by 2×2 → 4×2 */
+    function mul4x2_2x2(A, B) {
+      var C = [[0,0],[0,0],[0,0],[0,0]];
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 2; j++)
+          for (var k = 0; k < 2; k++)
+            C[i][j] += A[i][k] * B[k][j];
+      return C;
+    }
+
+    /* Multiply 4×2 by 2×1 → 4×1 */
+    function mul4x2_2x1(A, v) {
+      var r = [0,0,0,0];
+      for (var i = 0; i < 4; i++)
+        r[i] = A[i][0] * v[0] + A[i][1] * v[1];
+      return r;
+    }
+
+    /* Extract 2×2 from 4×4 given row/col indices */
+    function extract2x2From4x4(M, rows, cols) {
+      return [[M[rows[0]][cols[0]], M[rows[0]][cols[1]]],
+              [M[rows[1]][cols[0]], M[rows[1]][cols[1]]]];
+    }
+
+    /* Build 4×2 from columns of identity-like mapping: H = [[1,0],[0,1],[0,0],[0,0]] */
+    function hMatrix() {
+      return [[1,0],[0,1],[0,0],[0,0]];
+    }
+    /* H transpose (2×4): maps state to measurement space */
+    function hTranspose() {
+      return [[1,0,0,0],[0,1,0,0]];
+    }
+    /* Multiply 2×4 by 4×4 → 2×4 */
+    function mul2x4_4x4(A, B) {
+      var C = [[0,0,0,0],[0,0,0,0]];
+      for (var i = 0; i < 2; i++)
+        for (var j = 0; j < 4; j++)
+          for (var k = 0; k < 4; k++)
+            C[i][j] += A[i][k] * B[k][j];
+      return C;
+    }
+    /* Multiply 2×4 by 4×2 → 2×2 */
+    function mul2x4_4x2(A, B) {
+      var C = [[0,0],[0,0]];
+      for (var i = 0; i < 2; i++)
+        for (var j = 0; j < 2; j++)
+          for (var k = 0; k < 4; k++)
+            C[i][j] += A[i][k] * B[k][j];
+      return C;
+    }
+    /* Multiply 2×4 by 4×1 → 2×1 */
+    function mul2x4_4x1(A, v) {
+      return [A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]+A[0][3]*v[3],
+              A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]+A[1][3]*v[3]];
+    }
+    /* 4×2 by 2×4 → 4×4 */
+    function mul4x2_2x4(A, B) {
+      var C = mat4Create();
+      for (var i = 0; i < 4; i++)
+        for (var j = 0; j < 4; j++)
+          for (var k = 0; k < 2; k++)
+            C[i][j] += A[i][k] * B[k][j];
+      return C;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §2  EXTENDED KALMAN FILTER (Position + Velocity)
+       ══════════════════════════════════════════════════════════════ */
+
+    class ExtendedKalmanFilter {
+      constructor() {
+        /* State vector: [lat, lng, vLat, vLng] */
+        this.x = [0, 0, 0, 0];
+        /* Covariance matrix 4×4 */
+        this.P = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
+        /* Process noise */
+        this.qPos = 0.00001;
+        this.qVel = 0.0001;
+        /* Measurement noise */
+        this.rNoise = 0.0003;
+        /* R matrix (2×2) */
+        this.R = [[this.rNoise, 0],[0, this.rNoise]];
+        this.initialized = false;
+        this.lastTime = null;
+      }
+
+      predict(dt) {
+        if (!this.initialized) return;
+        if (dt <= 0) dt = 1;
+
+        /* F = state transition matrix */
+        var F = [[1,0,dt,0],[0,1,0,dt],[0,0,1,0],[0,0,0,1]];
+
+        /* Predict state: x = F * x */
+        this.x = mat4Vec(F, this.x);
+
+        /* Predict covariance: P = F P F^T + Q */
+        var Ft = mat4Transpose(F);
+        var FP = mat4Mul(F, this.P);
+        this.P = mat4Mul(FP, Ft);
+
+        /* Add process noise Q */
+        this.P[0][0] += this.qPos;
+        this.P[1][1] += this.qPos;
+        this.P[2][2] += this.qVel;
+        this.P[3][3] += this.qVel;
+      }
+
+      update(measuredLat, measuredLng) {
+        var now = performance.now() / 1000;
+
+        if (!this.initialized) {
+          this.x = [measuredLat, measuredLng, 0, 0];
+          this.P = [[this.rNoise,0,0,0],[0,this.rNoise,0,0],[0,0,1,0],[0,0,0,1]];
+          this.initialized = true;
+          this.lastTime = now;
+          return [measuredLat, measuredLng];
+        }
+
+        var dt = now - this.lastTime;
+        this.lastTime = now;
+        if (dt > 60) dt = 60;
+
+        /* Predict step */
+        this.predict(dt);
+
+        /* ── Measurement update ── */
+        /* H^T (2×4): observation maps state to measurement */
+        var HT = hTranspose();
+        /* H (4×2) */
+        var H = hMatrix();
+
+        /* Innovation: y = z - H^T * x */
+        var predicted = mul2x4_4x1(HT, this.x);
+        var y = [measuredLat - predicted[0], measuredLng - predicted[1]];
+
+        /* Innovation covariance: S = H^T P H + R */
+        var HTP = mul2x4_4x4(HT, this.P);
+        var S = mul2x4_4x2(HTP, H);
+        S[0][0] += this.R[0][0];
+        S[1][1] += this.R[1][1];
+
+        /* Kalman gain: K = P H S^{-1} (4×2) */
+        var PH = [[0,0],[0,0],[0,0],[0,0]];
+        for (var i = 0; i < 4; i++)
+          for (var j = 0; j < 2; j++)
+            for (var k = 0; k < 4; k++)
+              PH[i][j] += this.P[i][k] * H[k][j];
+
+        var Sinv = inv2x2(S);
+        var K = mul4x2_2x2(PH, Sinv);
+
+        /* Update state: x = x + K * y */
+        var Ky = mul4x2_2x1(K, y);
+        for (var i = 0; i < 4; i++)
+          this.x[i] += Ky[i];
+
+        /* Update covariance: P = (I - K H^T) P */
+        var KHT = mul4x2_2x4(K, HT);
+        var IminKH = mat4Sub(mat4Identity(), KHT);
+        this.P = mat4Mul(IminKH, this.P);
+
+        return [this.x[0], this.x[1]];
+      }
+
+      getPosition() {
+        return [this.x[0], this.x[1]];
+      }
+
+      getVelocity() {
+        return [this.x[2], this.x[3]];
+      }
+
+      getSpeedKmh() {
+        var vLat = this.x[2];
+        var vLng = this.x[3];
+        var lat = this.x[0];
+        var latMetersPerDeg = 111320;
+        var lngMetersPerDeg = 111320 * Math.cos(lat * Math.PI / 180);
+        var vNorth = vLat * latMetersPerDeg;
+        var vEast  = vLng * lngMetersPerDeg;
+        var speedMs = Math.sqrt(vNorth * vNorth + vEast * vEast);
+        return speedMs * 3.6;
+      }
+
+      getBearing() {
+        var vLat = this.x[2];
+        var vLng = this.x[3];
+        if (Math.abs(vLat) < 1e-10 && Math.abs(vLng) < 1e-10) return 0;
+        var bearing = Math.atan2(vLng, vLat) * (180 / Math.PI);
+        return (bearing + 360) % 360;
+      }
+
+      predictFuturePosition(seconds) {
+        return [
+          this.x[0] + this.x[2] * seconds,
+          this.x[1] + this.x[3] * seconds
+        ];
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §3  HELPERS
+       ══════════════════════════════════════════════════════════════ */
+
+    /* Haversine distance in meters */
+    function haversineMeters(lat1, lng1, lat2, lng2) {
+      var R = 6371000;
+      var dLat = (lat2 - lat1) * Math.PI / 180;
+      var dLng = (lng2 - lng1) * Math.PI / 180;
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    /* Speed-adaptive animation duration */
+    function getAnimationDuration(speedKmh) {
+      if (speedKmh < 5)  return 2000;
+      if (speedKmh < 30) return 1200;
+      if (speedKmh < 80) return 800;
+      return 500;
+    }
+
+    /* Movement pattern classification */
+    function classifyMovement(speedKmh) {
+      if (speedKmh < 1)  return 'stationary';
+      if (speedKmh < 7)  return 'walking';
+      if (speedKmh < 30) return 'running';
+      return 'vehicle';
+    }
+
+    /* Safety score: 0-100 based on speed, time of day, distance from SOS */
+    function computeSafetyScore(speedKmh, distMeters) {
+      var score = 100;
+      /* Speed penalty */
+      if (speedKmh > 80) score -= 35;
+      else if (speedKmh > 40) score -= 20;
+      else if (speedKmh > 15) score -= 10;
+      /* Distance from SOS origin penalty */
+      if (distMeters > 2000) score -= 25;
+      else if (distMeters > 1000) score -= 15;
+      else if (distMeters > 500) score -= 8;
+      /* Time of day penalty (night hours) */
+      var hour = new Date().getHours();
+      if (hour >= 22 || hour < 5) score -= 15;
+      else if (hour >= 20 || hour < 6) score -= 8;
+      return Math.max(0, Math.min(100, score));
+    }
+
+    /* Bearing to compass */
+    function bearingToCompass(deg) {
+      var dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+      var idx = Math.round(deg / 22.5) % 16;
+      return dirs[idx];
+    }
+
+    /* Score color */
+    function scoreColor(s) {
+      if (s > 70) return 'var(--color-success)';
+      if (s > 40) return '#ffc107';
+      return 'var(--color-danger)';
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §4  DIRECTIONAL MARKER ICON
+       ══════════════════════════════════════════════════════════════ */
+
+    function createDirectionalIcon(bearing) {
+      return L.divIcon({
+        className: 'swiggy-marker-container',
+        html: '<div class="swiggy-marker">' +
+                '<div class="swiggy-marker-ring">' +
+                  '<div class="swiggy-marker-arrow" style="transform:rotate(' + bearing + 'deg)"></div>' +
+                '</div>' +
+              '</div>',
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+    }
+
+    /* Update existing marker's arrow rotation without recreating the icon */
+    function updateMarkerBearing(alertId, bearing) {
+      if (!markers[alertId]) return;
+      var el = markers[alertId].getElement();
+      if (!el) return;
+      var arrow = el.querySelector('.swiggy-marker-arrow');
+      if (arrow) arrow.style.transform = 'rotate(' + bearing + 'deg)';
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §5  GRADIENT TRAIL RENDERING
+       ══════════════════════════════════════════════════════════════ */
+
+    function renderGradientTrail(alertId) {
+      var coords = trailCoords[alertId];
+      if (!coords || coords.length < 2) return;
+
+      /* Remove previous trail layers */
+      if (trailLayers[alertId]) {
+        trailLayers[alertId].forEach(function(l) { map.removeLayer(l); });
+      }
+      trailLayers[alertId] = [];
+
+      var n = coords.length;
+      var cutOld = Math.floor(n * 0.4);
+      var cutMid = Math.floor(n * 0.8);
+
+      /* Segment 1: old (0 → 40%) */
+      if (cutOld >= 2) {
+        var seg1 = coords.slice(0, cutOld);
+        var l1 = L.polyline(seg1, { color: '#ff2d8a', weight: 3, opacity: 0.2, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+        trailLayers[alertId].push(l1);
+      }
+
+      /* Segment 2: middle (40% → 80%) */
+      if (cutMid - cutOld >= 1) {
+        var seg2 = coords.slice(Math.max(0, cutOld - 1), cutMid);
+        var l2 = L.polyline(seg2, { color: '#ff2d8a', weight: 3, opacity: 0.5, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+        trailLayers[alertId].push(l2);
+      }
+
+      /* Segment 3: recent (80% → 100%) */
+      if (n - cutMid >= 1) {
+        var seg3 = coords.slice(Math.max(0, cutMid - 1));
+        var l3 = L.polyline(seg3, { color: '#ff2d8a', weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+        trailLayers[alertId].push(l3);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §6  PREDICTIVE TRAJECTORY DOTS
+       ══════════════════════════════════════════════════════════════ */
+
+    function renderPredictionDots(alertId) {
+      /* Remove previous prediction dots */
+      if (predictionDots[alertId]) {
+        predictionDots[alertId].forEach(function(d) { map.removeLayer(d); });
+      }
+      predictionDots[alertId] = [];
+
+      var ekf = ekfFilters[alertId];
+      if (!ekf || !ekf.initialized) return;
+      if (ekf.getSpeedKmh() < 0.5) return;
+
+      var intervals = [5, 10, 15];
+      var opacities = [0.5, 0.3, 0.15];
+
+      for (var i = 0; i < intervals.length; i++) {
+        var pos = ekf.predictFuturePosition(intervals[i]);
+        var dot = L.circleMarker(pos, {
+          radius: 4,
+          color: '#00f2fe',
+          fillColor: '#00f2fe',
+          fillOpacity: opacities[i],
+          opacity: opacities[i],
+          weight: 1
+        }).addTo(map);
+        predictionDots[alertId].push(dot);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §7  GEOFENCE SAFETY ZONE
+       ══════════════════════════════════════════════════════════════ */
+
+    function drawGeofence(alertId, lat, lng) {
+      if (geofenceCircles[alertId]) map.removeLayer(geofenceCircles[alertId]);
+      geofenceCircles[alertId] = L.circle([lat, lng], {
+        radius: 500,
+        color: '#ff2d8a',
+        weight: 1,
+        dashArray: '8 6',
+        fillColor: 'rgba(255, 45, 138, 0.08)',
+        fillOpacity: 1,
+        opacity: 0.6
+      }).addTo(map);
+    }
+
+    function checkGeofenceBreach(alertId, lat, lng) {
+      var origin = sosOrigins[alertId];
+      if (!origin) return false;
+      var dist = haversineMeters(origin[0], origin[1], lat, lng);
+      return dist > 500;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §8  ANIMATION QUEUE SYSTEM
+       ══════════════════════════════════════════════════════════════ */
+
+    function enqueueAnimation(alertId, targetLat, targetLng, duration) {
+      if (!animationQueues[alertId]) animationQueues[alertId] = [];
+      animationQueues[alertId].push({ lat: targetLat, lng: targetLng, duration: duration });
+      if (!animating[alertId]) {
+        processQueue(alertId);
+      }
+    }
+
+    function processQueue(alertId) {
+      var queue = animationQueues[alertId];
+      if (!queue || queue.length === 0) {
+        animating[alertId] = false;
+        return;
+      }
+      animating[alertId] = true;
+      var next = queue.shift();
+      animateMarkerSmooth(alertId, next.lat, next.lng, next.duration, function() {
+        processQueue(alertId);
+      });
+    }
+
+    function animateMarkerSmooth(alertId, targetLat, targetLng, duration, callback) {
+      var marker = markers[alertId];
+      if (!marker) { if (callback) callback(); return; }
+
+      var startLatLng = marker.getLatLng();
+      var startLat = startLatLng.lat;
+      var startLng = startLatLng.lng;
+      var startTime = performance.now();
+
+      function step(time) {
+        var elapsed = time - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        /* Cubic ease-out */
+        var t = 1 - Math.pow(1 - progress, 3);
+        var currentLat = startLat + (targetLat - startLat) * t;
+        var currentLng = startLng + (targetLng - startLng) * t;
+        marker.setLatLng([currentLat, currentLng]);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          if (callback) callback();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §9  SMART AUTO-PAN
+       ══════════════════════════════════════════════════════════════ */
+
+    function smartAutoPan(alertId, lat, lng) {
+      if (alertId !== selectedAlertId) return;
+      if (userDraggedMap) return;
+
+      var bounds = map.getBounds();
+      var padLat = (bounds.getNorth() - bounds.getSouth()) * 0.15;
+      var padLng = (bounds.getEast()  - bounds.getWest())  * 0.15;
+
+      if (lat > bounds.getNorth() - padLat || lat < bounds.getSouth() + padLat ||
+          lng > bounds.getEast()  - padLng || lng < bounds.getWest()  + padLng) {
+        map.panTo([lat, lng], { animate: true, duration: 0.8 });
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §10  CONNECTION QUALITY INDICATOR
+       ══════════════════════════════════════════════════════════════ */
+
+    function recordUpdate() {
+      var now = Date.now();
+      lastUpdateTs = now;
+      updateTimestamps.push(now);
+      /* Keep only last 60 seconds of timestamps */
+      while (updateTimestamps.length > 0 && updateTimestamps[0] < now - 60000) {
+        updateTimestamps.shift();
+      }
+      refreshConnUI();
+    }
+
+    function refreshConnUI() {
+      var el = document.getElementById('connLastUpdate');
+      if (lastUpdateTs) {
+        var ago = Math.round((Date.now() - lastUpdateTs) / 1000);
+        el.textContent = ago + 's ago';
+      }
+      document.getElementById('connFrequency').textContent = updateTimestamps.length + ' upd/min';
+    }
+
+    function setConnState(state) {
+      var dot = document.getElementById('connDot');
+      var label = document.getElementById('connStatus');
+      dot.className = 'conn-dot ' + state;
+      if (state === 'connected')    label.textContent = 'Connected';
+      else if (state === 'disconnected') label.textContent = 'Disconnected';
+      else label.textContent = 'Reconnecting…';
+    }
+
+    /* Refresh "last update" every second */
+    setInterval(refreshConnUI, 1000);
+
+    /* ══════════════════════════════════════════════════════════════
+       §11  SAFETY DASHBOARD UPDATE
+       ══════════════════════════════════════════════════════════════ */
+
+    function updateSafetyDashboard(alertId) {
+      var dash = document.getElementById('safetyDashboard');
+      var ekf = ekfFilters[alertId];
+      var pos = lastPositions[alertId];
+      if (!ekf || !ekf.initialized || !pos) {
+        dash.style.display = 'none';
+        return;
+      }
+      dash.style.display = '';
+
+      var speed = ekf.getSpeedKmh();
+      var bearing = ekf.getBearing();
+      var pattern = classifyMovement(speed);
+      var origin = sosOrigins[alertId];
+      var distM = origin ? haversineMeters(origin[0], origin[1], ekf.x[0], ekf.x[1]) : 0;
+      var safetyScore = computeSafetyScore(speed, distM);
+      var elapsed = Math.round((Date.now() - pos.timestamp) / 1000);
+
+      /* Live status */
+      document.getElementById('safetyStatus').textContent = speed > 1 ? '● Moving' : '○ Stationary';
+      document.getElementById('safetyStatus').style.color = speed > 1 ? 'var(--color-success)' : 'var(--accent-blue)';
+
+      /* Speed */
+      document.getElementById('safetySpeed').textContent = speed.toFixed(1) + ' km/h';
+
+      /* Bearing */
+      document.getElementById('safetyBearing').textContent = bearing.toFixed(0) + '° ' + bearingToCompass(bearing);
+
+      /* Distance from SOS */
+      if (distM > 1000) {
+        document.getElementById('safetyDist').textContent = (distM / 1000).toFixed(2) + ' km';
+      } else {
+        document.getElementById('safetyDist').textContent = Math.round(distM) + ' m';
+      }
+
+      /* Movement pattern */
+      var patternEl = document.getElementById('safetyPattern');
+      var patternLabels = { stationary: 'Stationary', walking: 'Walking', running: 'Running', vehicle: 'In Vehicle' };
+      patternEl.innerHTML = '<span class="pattern-badge ' + pattern + '">' + patternLabels[pattern] + '</span>';
+
+      /* Last ping */
+      document.getElementById('safetyLastPing').textContent = elapsed + 's ago';
+
+      /* Safety score */
+      var sc = scoreColor(safetyScore);
+      document.getElementById('safetyScoreNum').textContent = Math.round(safetyScore);
+      document.getElementById('safetyScoreNum').style.color = sc;
+
+      var circumference = 2 * Math.PI * 38;
+      var offset = circumference - (safetyScore / 100) * circumference;
+      var arc = document.getElementById('scoreArc');
+      arc.style.stroke = sc;
+      arc.style.strokeDasharray = circumference;
+      arc.style.strokeDashoffset = offset;
+
+      /* Geofence breach */
+      var breach = checkGeofenceBreach(alertId, ekf.x[0], ekf.x[1]);
+      var warnEl = document.getElementById('geofenceWarning');
+      if (breach) {
+        warnEl.classList.add('visible');
+      } else {
+        warnEl.classList.remove('visible');
+      }
+    }
+
+    /* Refresh safety dashboard every second for the selected alert */
+    setInterval(function() {
+      if (selectedAlertId) updateSafetyDashboard(selectedAlertId);
+    }, 1000);
+
+    /* ══════════════════════════════════════════════════════════════
+       §12  CORE: UPDATE MARKER (location event handler)
+       ══════════════════════════════════════════════════════════════ */
+
+    function updateMarker(alertId, rawLat, rawLng) {
+      /* Initialize EKF if needed */
+      if (!ekfFilters[alertId]) {
+        ekfFilters[alertId] = new ExtendedKalmanFilter();
+      }
+
+      var ekf = ekfFilters[alertId];
+      var filtered = ekf.update(rawLat, rawLng);
+      var filteredLat = filtered[0];
+      var filteredLng = filtered[1];
+
+      /* Record SOS origin on first fix */
+      if (!sosOrigins[alertId]) {
+        sosOrigins[alertId] = [filteredLat, filteredLng];
+        drawGeofence(alertId, filteredLat, filteredLng);
+      }
+
+      lastPositions[alertId] = { lat: filteredLat, lng: filteredLng, timestamp: Date.now() };
+
+      /* Speed & bearing */
+      var speedKmh = ekf.getSpeedKmh();
+      var bearing   = ekf.getBearing();
+      var duration  = getAnimationDuration(speedKmh);
+
+      /* Create or animate marker */
+      if (!markers[alertId]) {
+        markers[alertId] = L.marker([filteredLat, filteredLng], {
+          icon: createDirectionalIcon(bearing)
+        }).addTo(map).bindPopup('Alert #' + alertId);
+      } else {
+        /* Update bearing visually */
+        updateMarkerBearing(alertId, bearing);
+        /* Queue the animation */
+        enqueueAnimation(alertId, filteredLat, filteredLng, duration);
+      }
+
+      /* Trail coordinates */
+      if (!trailCoords[alertId]) trailCoords[alertId] = [];
+      trailCoords[alertId].push([filteredLat, filteredLng]);
+      renderGradientTrail(alertId);
+
+      /* Prediction dots */
+      renderPredictionDots(alertId);
+
+      /* Smart auto-pan */
+      smartAutoPan(alertId, filteredLat, filteredLng);
+
+      /* Connection quality */
+      recordUpdate();
+
+      /* Safety dashboard update */
+      if (alertId === selectedAlertId) {
+        updateSafetyDashboard(alertId);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §13  SOCKET.IO
+       ══════════════════════════════════════════════════════════════ */
+
+    var socket = io('http://localhost:3000');
+
+    socket.on('connect', function() { setConnState('connected'); });
+    socket.on('disconnect', function() { setConnState('disconnected'); });
+    socket.on('reconnecting', function() { setConnState('reconnecting'); });
+    socket.on('reconnect_attempt', function() { setConnState('reconnecting'); });
+
+    socket.on('newAlert', function(data) {
+      showNotification('New SOS from user #' + data.userId);
+      loadAlerts();
+    });
+
+    socket.on('locationUpdate', function(data) {
+      updateMarker(data.alertId, data.latitude, data.longitude);
+    });
+
+    socket.on('alertResolved', function(data) {
+      loadAlerts();
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       §14  ALERT LIST & SELECTION
+       ══════════════════════════════════════════════════════════════ */
+
+    async function loadAlerts() {
+      var alerts = await apiGet('/alerts');
+      if (!alerts) return;
+      var list = document.getElementById('alertList');
+      list.innerHTML = '';
+      var active = alerts.filter(function(a) { return a.status === 'active'; });
+      document.getElementById('alertCount').textContent = active.length;
+
+      alerts.forEach(function(a) {
+        var card = document.createElement('div');
+        card.className = 'alert-card ' + a.status;
+
+        var breached = false;
+        if (ekfFilters[a.id] && ekfFilters[a.id].initialized && sosOrigins[a.id]) {
+          var pos = ekfFilters[a.id].getPosition();
+          breached = checkGeofenceBreach(a.id, pos[0], pos[1]);
+        }
+
+        card.innerHTML =
+          '<div class="name">' + (a.name || 'Unknown') + '</div>' +
+          '<div class="meta">' + formatDate(a.timestamp) + '</div>' +
+          '<span class="status-badge ' + a.status + '">' + a.status.toUpperCase() + '</span>' +
+          (breached ? '<div class="geofence-warning visible" style="margin-top:6px;font-size:0.7rem;padding:5px 8px">⚠ Outside zone</div>' : '');
+        card.onclick = function() { selectAlert(a.id); };
+        list.appendChild(card);
+      });
+    }
+
+    async function selectAlert(alertId) {
+      selectedAlertId = alertId;
+      userDraggedMap = false;
+
+      var locs = await apiGet('/locations/' + alertId);
+      if (locs && locs.length) {
+        /* Reset EKF for this alert with historical data replay */
+        ekfFilters[alertId] = new ExtendedKalmanFilter();
+        trailCoords[alertId] = [];
+
+        var coords = [];
+        for (var i = 0; i < locs.length; i++) {
+          var filtered = ekfFilters[alertId].update(locs[i].latitude, locs[i].longitude);
+          coords.push(filtered);
+          trailCoords[alertId].push(filtered);
+        }
+
+        /* Record SOS origin as first point */
+        sosOrigins[alertId] = [coords[0][0], coords[0][1]];
+        drawGeofence(alertId, coords[0][0], coords[0][1]);
+
+        /* Render gradient trail */
+        renderGradientTrail(alertId);
+
+        /* Place marker at latest position with bearing */
+        var last = coords[coords.length - 1];
+        var bearing = ekfFilters[alertId].getBearing();
+
+        if (markers[alertId]) map.removeLayer(markers[alertId]);
+        markers[alertId] = L.marker(last, {
+          icon: createDirectionalIcon(bearing)
+        }).addTo(map).bindPopup('Alert #' + alertId).openPopup();
+
+        /* Fit map to trail */
+        if (trailLayers[alertId] && trailLayers[alertId].length > 0) {
+          var allCoords = trailCoords[alertId];
+          var bounds = L.latLngBounds(allCoords);
+          map.fitBounds(bounds, { padding: [50, 50] });
+        }
+
+        lastPositions[alertId] = { lat: last[0], lng: last[1], timestamp: Date.now() };
+
+        /* Render predictions */
+        renderPredictionDots(alertId);
+
+        /* Update safety dashboard */
+        updateSafetyDashboard(alertId);
+      }
+      loadEvidence(alertId);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §15  EVIDENCE LOADER
+       ══════════════════════════════════════════════════════════════ */
+
+    async function loadEvidence(alertId) {
+      var media = await apiGet('/media/' + alertId);
+      var panel = document.getElementById('evidencePanel');
+      if (!media || !media.length) {
+        panel.innerHTML = '<p style="color:#666;font-size:0.85rem">No evidence uploaded yet.</p>';
+        return;
+      }
+      var html = '<div class="media-grid">';
+      for (var i = 0; i < media.length; i++) {
+        var m = media[i];
+        var url = 'http://localhost:3000' + m.file_url;
+        if (m.media_type === 'audio') {
+          html += '<div class="media-item"><p>🎙 Audio</p><audio controls src="' + url + '"></audio>' +
+                  '<p style="font-size:0.65rem;color:#555;margin-top:4px">' +
+                  (m.file_hash ? m.file_hash.slice(0,12) + '…' : '') + '</p></div>';
+        } else if (m.media_type === 'video') {
+          html += '<div class="media-item"><p>🎥 Video</p><video controls src="' + url + '"></video></div>';
+        } else {
+          html += '<div class="media-item"><a href="' + url + '" target="_blank">📎 File</a></div>';
+        }
+      }
+      html += '</div>';
+      panel.innerHTML = html;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §16  NOTIFICATIONS
+       ══════════════════════════════════════════════════════════════ */
+
+    function showNotification(msg) {
+      if (Notification.permission === 'granted') {
+        new Notification('KALI Alert', { body: msg });
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       §17  BOOT
+       ══════════════════════════════════════════════════════════════ */
+
+    Notification.requestPermission();
+    loadAlerts();
+    setInterval(loadAlerts, 30000);
+  </script>
+</body>
+</html>

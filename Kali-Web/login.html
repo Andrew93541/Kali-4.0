@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kali – Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-box">
+      <h1>KALI</h1>
+      <p>Women's Safety System – Sign In</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      <button class="btn-full" onclick="doLogin()">Sign In</button>
+      <p class="error-msg" id="errMsg"></p>
+
+      <div class="demo-accounts-card" style="margin-top: 24px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius-md);">
+        <p style="margin-bottom: 10px; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent-blue); text-align: left; margin-top: 0;">Demo Accounts for Testing</p>
+        <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+            <span><strong>User (Victim):</strong> user@kali.com</span>
+            <button onclick="fillCredentials('user@kali.com', 'user123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+            <span><strong>Guardian:</strong> guardian@kali.com</span>
+            <button onclick="fillCredentials('guardian@kali.com', 'guardian123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 2px;">
+            <span><strong>Police (Admin):</strong> admin@kali.com</span>
+            <button onclick="fillCredentials('admin@kali.com', 'admin123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align:center;margin-top:20px;font-size:0.85rem;color:#888">
+        No account? <a href="register.html" style="color:#e91e8c">Register</a>
+      </p>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script>
+    if (getToken()) redirectByRole();
+
+    function fillCredentials(email, password) {
+      document.getElementById('email').value = email;
+      document.getElementById('password').value = password;
+      const err = document.getElementById('errMsg');
+      err.style.display = 'none';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const data = await login(email, password);
+      if (data.token) {
+        redirectByRole();
+      } else {
+        const err = document.getElementById('errMsg');
+        err.textContent = data.error || 'Login failed';
+        err.style.display = 'block';
+      }
+    }
+
+    function redirectByRole() {
+      const role = getRole();
+      if (role === 'Admin') window.location.href = 'police/index.html';
+      else window.location.href = 'guardian/index.html';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/activity_login.xml",
+        "source": "com.kali.app-main-49:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/activity_register.xml",
+        "source": "com.kali.app-main-49:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/dialog_custom_google_input.xml",
+        "source": "com.kali.app-main-49:/layout/dialog_custom_google_input.xml"
+    },
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/dialog_google_picker.xml",
+        "source": "com.kali.app-main-49:/layout/dialog_google_picker.xml"
+    },
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/activity_sos.xml",
+        "source": "com.kali.app-main-49:/layout/activity_sos.xml"
+    },
+    {
+        "merged": "com.kali.app-mergeDebugResources-46:/layout/item_google_account.xml",
+        "source": "com.kali.app-main-49:/layout/item_google_account.xml"
+    }
+]

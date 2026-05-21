@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kali – Police Admin Panel</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    .main-grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; padding: 18px; height: calc(100vh - 70px); }
+    .detail-section { margin-top: 16px; }
+    .detail-section h4 { color: var(--accent-pink); font-family: var(--font-display); font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .action-row { display: flex; gap: 10px; margin-top: 14px; }
+    .assign-input { flex: 1; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); }
+    .assign-input:focus { outline: none; border-color: var(--accent-pink); }
+
+    /* ── Swiggy-style live tracking animations ── */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.35); opacity: 1; }
+      80%, 100% { transform: scale(1.3); opacity: 0; }
+    }
+    @keyframes pulse-dot {
+      0% { transform: scale(0.9); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(0.9); }
+    }
+
+    /* ── Directional arrow marker ── */
+    .swiggy-marker {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .swiggy-marker::before {
+      content: '';
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: var(--accent-pink);
+      border-radius: 50%;
+      box-shadow: 0 0 18px var(--accent-pink-glow);
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+    }
+    .swiggy-marker-arrow {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 14px solid #fff;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 2;
+      position: relative;
+    }
+    .swiggy-marker-ring {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--accent-pink);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.35);
+      animation: pulse-dot 1.2s ease-in-out infinite;
+    }
+
+    /* ── Telemetry HUD ── */
+    .swiggy-hud {
+      margin-top: 14px;
+      padding: 14px;
+      background: rgba(0, 242, 254, 0.05);
+      border: 1px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15);
+    }
+    .hud-title {
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      margin-top: 0;
+    }
+    .hud-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      font-size: 0.78rem;
+    }
+    .hud-grid .hud-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hud-grid .hud-label {
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .hud-grid .hud-value {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .hud-grid .hud-value.accent-blue { color: var(--accent-blue); }
+    .hud-grid .hud-value.accent-pink { color: var(--accent-pink); }
+    .hud-grid .hud-value.accent-success { color: var(--color-success); }
+
+    /* ── Signal quality bar ── */
+    .signal-bar-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    .signal-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s ease, background 0.6s ease;
+    }
+
+    /* ── Connection quality indicator ── */
+    .connection-indicator {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 1000;
+      background: rgba(10, 10, 18, 0.85);
+      backdrop-filter: blur(var(--glass-blur, 12px));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 170px;
+      box-shadow: var(--glass-shadow);
+    }
+    .conn-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .conn-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .conn-dot.connected {
+      background: var(--color-success);
+      box-shadow: 0 0 8px var(--color-success);
+    }
+    .conn-dot.disconnected {
+      background: var(--color-danger);
+      box-shadow: 0 0 8px var(--color-danger);
+    }
+    .conn-dot.reconnecting {
+      background: #f5a623;
+      box-shadow: 0 0 8px #f5a623;
+      animation: pulse-dot 1s ease-in-out infinite;
+    }
+
+    /* ── Geofence breach flash ── */
+    @keyframes geofence-flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .geofence-warning {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(255, 45, 138, 0.15);
+      border: 1px solid var(--accent-pink);
+      border-radius: var(--radius-md);
+      color: var(--accent-pink);
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 8px;
+      animation: geofence-flash 0.8s ease-in-out infinite;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .geofence-warning.active {
+      display: flex;
+    }
+
+    /* ── Animated number transition helper ── */
+    .hud-value-animate {
+      display: inline-block;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hud-value-animate.updating {
+      transform: translateY(-2px);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="brand">KALI ADMIN</span>
+    <span class="user-info" id="userName"></span>
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="main-grid">
+    <!-- Left: Alert list + detail -->
+    <div style="display:flex;flex-direction:column;gap:12px;overflow:hidden">
+      <div class="panel" style="flex:1;overflow-y:auto">
+        <h2>All Alerts <span class="badge-count" id="alertCount">0</span></h2>
+        <div id="alertList"></div>
+      </div>
+      <div class="panel" id="detailBox" style="display:none">
+        <h2>Case Detail</h2>
+        <div id="detailContent"></div>
+      </div>
+    </div>
+
+    <!-- Right: Map -->
+    <div id="map" style="position:relative">
+      <div class="connection-indicator" id="connIndicator">
+        <div class="conn-row">
+          <div class="conn-dot" id="connDot"></div>
+          <span id="connStatus">Connecting...</span>
+        </div>
+        <div class="conn-row">
+          <span>Last update:</span>
+          <span id="connLastUpdate">—</span>
+        </div>
+        <div class="conn-row">
+          <span>Frequency:</span>
+          <span id="connFrequency">0 upd/min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    if (!requireAuth('Admin')) throw new Error('Unauth');
+    document.getElementById('userName').textContent = getName();
+
+    /* ═══════════════════════════════════════════════════════
+       MAP INITIALIZATION
+    ═══════════════════════════════════════════════════════ */
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    /* ═══════════════════════════════════════════════════════
+       STATE STORES
+    ═══════════════════════════════════════════════════════ */
+    const markers = {};
+    const trailPolylines = {};         // { alertId: [polyline1, polyline2, polyline3] }
+    const trailCoords = {};            // { alertId: [[lat,lng], ...] }
+    const ekfFilters = {};             // { alertId: ExtendedKalmanFilter }
+    const lastPositions = {};
+    const totalDistances = {};
+    const maxSpeeds = {};
+    const firstTimestamps = {};
+    const predictionMarkers = {};      // { alertId: [L.circleMarker, ...] }
+    const geofenceCircles = {};        // { alertId: L.circle }
+    const geofenceOrigins = {};        // { alertId: [lat, lng] }
+    const geofenceBreached = {};       // { alertId: boolean }
+    const animationQueues = {};        // { alertId: [{ lat, lng }] }
+    const animating = {};              // { alertId: boolean }
+    const markerBearings = {};         // { alertId: degrees }
+    let activeAlertId = null;
+
+    /* ── Smart auto-pan state ── */
+    let userDraggedMap = false;
+    let dragResetTimer = null;
+    map.on('movestart', function () {
+      userDraggedMap = true;
+      if (dragResetTimer) clearTimeout(dragResetTimer);
+      dragResetTimer = setTimeout(function () {
+        userDraggedMap = false;
+      }, 10000);
+    });
+
+    /* ── Connection quality state ── */
+    let connectionStatus = 'disconnected';
+    let lastUpdateTime = null;
+    const updateTimestamps = [];
+
+    /* ═══════════════════════════════════════════════════════
+       4×4 MATRIX MATH HELPERS (no external library)
+    ═══════════════════════════════════════════════════════ */
+    function mat4Create() {
+      return [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    }
+
+    function mat4Identity() {
+      return [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
+    }
+
+    function mat4Add(A, B) {
+      const R = mat4Create();
+      for (let i = 0; i < 4; i++)
+        for (let j = 0; j < 4; j++)
+          R[i][j] = A[i][j] + B[i][j];
+      return R;
+    }
+
+    function mat4Sub(A, B) {
+      const R = mat4Create();
+      for (let i = 0; i < 4; i++)
+        for (let j = 0; j < 4; j++)
+          R[i][j] = A[i][j] - B[i][j];
+      return R;
+    }
+
+    function mat4Mul(A, B) {
+      const R = mat4Create();
+      for (let i = 0; i < 4; i++)
+        for (let j = 0; j < 4; j++)
+          for (let k = 0; k < 4; k++)
+            R[i][j] += A[i][k] * B[k][j];
+      return R;
+    }
+
+    function mat4Transpose(A) {
+      const R = mat4Create();
+      for (let i = 0; i < 4; i++)
+        for (let j = 0; j < 4; j++)
+          R[i][j] = A[j][i];
+      return R;
+    }
+
+    function mat4MulVec(A, v) {
+      const r = [0, 0, 0, 0];
+      for (let i = 0; i < 4; i++)
+        for (let j = 0; j < 4; j++)
+          r[i] += A[i][j] * v[j];
+      return r;
+    }
+
+    /* Inverse of a 4×4 matrix using cofactor expansion (general case) */
+    function mat4Inverse(m) {
+      const inv = mat4Create();
+      const a = m[0], b = m[1], c = m[2], d = m[3];
+
+      const s0 = a[0] * b[1] - b[0] * a[1];
+      const s1 = a[0] * b[2] - b[0] * a[2];
+      const s2 = a[0] * b[3] - b[0] * a[3];
+      const s3 = a[1] * b[2] - b[1] * a[2];
+      const s4 = a[1] * b[3] - b[1] * a[3];
+      const s5 = a[2] * b[3] - b[2] * a[3];
+
+      const c5 = c[2] * d[3] - d[2] * c[3];
+      const c4 = c[1] * d[3] - d[1] * c[3];
+      const c3 = c[1] * d[2] - d[1] * c[2];
+      const c2 = c[0] * d[3] - d[0] * c[3];
+      const c1 = c[0] * d[2] - d[0] * c[2];
+      const c0 = c[0] * d[1] - d[0] * c[1];
+
+      let det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+      if (Math.abs(det) < 1e-20) {
+        return mat4Identity();
+      }
+      det = 1.0 / det;
+
+      inv[0][0] = ( b[1] * c5 - b[2] * c4 + b[3] * c3) * det;
+      inv[0][1] = (-a[1] * c5 + a[2] * c4 - a[3] * c3) * det;
+      inv[0][2] = ( d[1] * s5 - d[2] * s4 + d[3] * s3) * det;
+      inv[0][3] = (-c[1] * s5 + c[2] * s4 - c[3] * s3) * det;
+
+      inv[1][0] = (-b[0] * c5 + b[2] * c2 - b[3] * c1) * det;
+      inv[1][1] = ( a[0] * c5 - a[2] * c2 + a[3] * c1) * det;
+      inv[1][2] = (-d[0] * s5 + d[2] * s2 - d[3] * s1) * det;
+      inv[1][3] = ( c[0] * s5 - c[2] * s2 + c[3] * s1) * det;
+
+      inv[2][0] = ( b[0] * c4 - b[1] * c2 + b[3] * c0) * det;
+      inv[2][1] = (-a[0] * c4 + a[1] * c2 - a[3] * c0) * det;
+      inv[2][2] = ( d[0] * s4 - d[1] * s2 + d[3] * s0) * det;
+      inv[2][3] = (-c[0] * s4 + c[1] * s2 - c[3] * s0) * det;
+
+      inv[3][0] = (-b[0] * c3 + b[1] * c1 - b[2] * c0) * det;
+      inv[3][1] = ( a[0] * c3 - a[1] * c1 + a[2] * c0) * det;
+      inv[3][2] = (-d[0] * s3 + d[1] * s1 - d[2] * s0) * det;
+      inv[3][3] = ( c[0] * s3 - c[1] * s1 + c[2] * s0) * det;
+
+      return inv;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       1. EXTENDED KALMAN FILTER (EKF) WITH VELOCITY
+       State vector: [lat, lng, vLat, vLng]
+    ═══════════════════════════════════════════════════════ */
+    class ExtendedKalmanFilter {
+      constructor() {
+        this.x = [0, 0, 0, 0]; // state: [lat, lng, vLat, vLng]
+        this.P = [              // covariance
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 1]
+        ];
+        this.processNoisePosVar = 0.00001;
+        this.processNoiseVelVar = 0.0001;
+        this.measurementNoiseVar = 0.0003;
+        this.initialized = false;
+        this.lastTime = null;
+      }
+
+      predict(dt) {
+        if (!this.initialized || dt <= 0) return;
+
+        // State transition matrix F
+        const F = [
+          [1, 0, dt, 0],
+          [0, 1, 0, dt],
+          [0, 0, 1,  0],
+          [0, 0, 0,  1]
+        ];
+
+        // Process noise Q
+        const dt2 = dt * dt;
+        const dt3 = dt2 * dt / 2;
+        const dt4 = dt2 * dt2 / 4;
+        const qp = this.processNoisePosVar;
+        const qv = this.processNoiseVelVar;
+        const Q = [
+          [qp + dt4 * qv,  0,               dt3 * qv,  0],
+          [0,               qp + dt4 * qv,   0,         dt3 * qv],
+          [dt3 * qv,        0,               dt2 * qv,  0],
+          [0,               dt3 * qv,        0,         dt2 * qv]
+        ];
+
+        // Predict state: x = F * x
+        this.x = mat4MulVec(F, this.x);
+
+        // Predict covariance: P = F * P * F^T + Q
+        const FP = mat4Mul(F, this.P);
+        const FT = mat4Transpose(F);
+        const FPFT = mat4Mul(FP, FT);
+        this.P = mat4Add(FPFT, Q);
+      }
+
+      update(measuredLat, measuredLng) {
+        const now = performance.now() / 1000;
+
+        if (!this.initialized) {
+          this.x = [measuredLat, measuredLng, 0, 0];
+          this.P = [
+            [this.measurementNoiseVar, 0, 0, 0],
+            [0, this.measurementNoiseVar, 0, 0],
+            [0, 0, 0.001, 0],
+            [0, 0, 0, 0.001]
+          ];
+          this.initialized = true;
+          this.lastTime = now;
+          return;
+        }
+
+        const dt = now - this.lastTime;
+        this.lastTime = now;
+
+        // Prediction step
+        this.predict(dt);
+
+        // Measurement matrix H (observe position only)
+        const H = [
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+
+        // Measurement noise R (only top-left 2x2 matters, but keep 4x4 for multiplication)
+        const R = [
+          [this.measurementNoiseVar, 0, 0, 0],
+          [0, this.measurementNoiseVar, 0, 0],
+          [0, 0, 1e10, 0],
+          [0, 0, 0, 1e10]
+        ];
+
+        // Innovation: y = z - H * x
+        const Hx = mat4MulVec(H, this.x);
+        const z = [measuredLat, measuredLng, 0, 0];
+        const y = [z[0] - Hx[0], z[1] - Hx[1], 0, 0];
+
+        // Innovation covariance: S = H * P * H^T + R
+        const HT = mat4Transpose(H);
+        const HP = mat4Mul(H, this.P);
+        const HPHT = mat4Mul(HP, HT);
+        const S = mat4Add(HPHT, R);
+
+        // Kalman gain: K = P * H^T * S^-1
+        const PHT = mat4Mul(this.P, HT);
+        const Sinv = mat4Inverse(S);
+        const K = mat4Mul(PHT, Sinv);
+
+        // Update state: x = x + K * y
+        const Ky = mat4MulVec(K, y);
+        this.x = [
+          this.x[0] + Ky[0],
+          this.x[1] + Ky[1],
+          this.x[2] + Ky[2],
+          this.x[3] + Ky[3]
+        ];
+
+        // Update covariance: P = (I - K*H) * P
+        const KH = mat4Mul(K, H);
+        const IKH = mat4Sub(mat4Identity(), KH);
+        this.P = mat4Mul(IKH, this.P);
+      }
+
+      getPosition() {
+        return [this.x[0], this.x[1]];
+      }
+
+      getVelocity() {
+        return [this.x[2], this.x[3]];
+      }
+
+      getSpeedKmh() {
+        const [vLat, vLng] = this.getVelocity();
+        // Convert degrees/sec to km/h using approximate scale
+        const latKmPerDeg = 111.32;
+        const lngKmPerDeg = 111.32 * Math.cos(this.x[0] * Math.PI / 180);
+        const vLatKm = vLat * latKmPerDeg; // km/s
+        const vLngKm = vLng * lngKmPerDeg; // km/s
+        const speedKmS = Math.sqrt(vLatKm * vLatKm + vLngKm * vLngKm);
+        return speedKmS * 3600; // km/h
+      }
+
+      getBearing() {
+        const [vLat, vLng] = this.getVelocity();
+        if (Math.abs(vLat) < 1e-12 && Math.abs(vLng) < 1e-12) return 0;
+        let bearing = Math.atan2(vLng, vLat) * 180 / Math.PI;
+        return (bearing + 360) % 360;
+      }
+
+      getCovarianceMagnitude() {
+        return Math.sqrt(this.P[0][0] * this.P[0][0] + this.P[1][1] * this.P[1][1]);
+      }
+
+      getEstimationError() {
+        return Math.sqrt(this.P[0][0] + this.P[1][1]);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       HAVERSINE DISTANCE
+    ═══════════════════════════════════════════════════════ */
+    function haversineDistance(coords1, coords2) {
+      const R = 6371;
+      const dLat = (coords2[0] - coords1[0]) * Math.PI / 180;
+      const dLng = (coords2[1] - coords1[1]) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(coords1[0] * Math.PI / 180) * Math.cos(coords2[0] * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       BEARING HELPERS
+    ═══════════════════════════════════════════════════════ */
+    function calculateBearing(startLat, startLng, endLat, endLng) {
+      const dLng = (endLng - startLng) * Math.PI / 180;
+      const sLat = startLat * Math.PI / 180;
+      const eLat = endLat * Math.PI / 180;
+      const y = Math.sin(dLng) * Math.cos(eLat);
+      const x = Math.cos(sLat) * Math.sin(eLat) - Math.sin(sLat) * Math.cos(eLat) * Math.cos(dLng);
+      let brng = Math.atan2(y, x) * 180 / Math.PI;
+      return (brng + 360) % 360;
+    }
+
+    function bearingToCompass(deg) {
+      const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+      const idx = Math.round(deg / 22.5) % 16;
+      return dirs[idx];
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       3. SPEED-ADAPTIVE ANIMATION DURATION
+    ═══════════════════════════════════════════════════════ */
+    function getAnimationDuration(speedKmh) {
+      if (speedKmh < 5) return 2000;
+      if (speedKmh < 30) return 1200;
+      if (speedKmh < 80) return 800;
+      return 500;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       5. DIRECTIONAL ARROW MARKER ICON
+    ═══════════════════════════════════════════════════════ */
+    function createDirectionalIcon(bearing) {
+      const rotation = bearing || 0;
+      return L.divIcon({
+        className: 'swiggy-marker-container',
+        html: '<div class="swiggy-marker">' +
+                '<div class="swiggy-marker-ring"></div>' +
+                '<div class="swiggy-marker-arrow" style="transform: rotate(' + rotation + 'deg)"></div>' +
+              '</div>',
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       6. TRAIL GRADIENT – draw 3 polyline segments
+    ═══════════════════════════════════════════════════════ */
+    function updateTrailGradient(alertId) {
+      const coords = trailCoords[alertId];
+      if (!coords || coords.length < 2) return;
+
+      // Remove existing trail polylines
+      if (trailPolylines[alertId]) {
+        trailPolylines[alertId].forEach(function (pl) { map.removeLayer(pl); });
+      }
+
+      const n = coords.length;
+      const oldEnd = Math.floor(n * 0.4);   // 0-40% = old
+      const midEnd = Math.floor(n * 0.8);   // 40-80% = mid
+      // 80-100% = recent
+
+      const segments = [];
+
+      // Old segment (first 40%)
+      if (oldEnd > 1) {
+        segments.push(L.polyline(coords.slice(0, oldEnd + 1), {
+          color: '#ff2d8a',
+          weight: 3,
+          opacity: 0.2,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map));
+      }
+
+      // Middle segment (40-80%)
+      if (midEnd > oldEnd) {
+        segments.push(L.polyline(coords.slice(Math.max(oldEnd - 1, 0), midEnd + 1), {
+          color: '#ff2d8a',
+          weight: 3,
+          opacity: 0.5,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map));
+      }
+
+      // Recent segment (last 20%)
+      if (n > midEnd) {
+        segments.push(L.polyline(coords.slice(Math.max(midEnd - 1, 0)), {
+          color: '#ff2d8a',
+          weight: 4,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map));
+      }
+
+      trailPolylines[alertId] = segments;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       2. PREDICTIVE TRAJECTORY RENDERING
+    ═══════════════════════════════════════════════════════ */
+    function updatePredictions(alertId) {
+      // Remove old predictions
+      if (predictionMarkers[alertId]) {
+        predictionMarkers[alertId].forEach(function (m) { map.removeLayer(m); });
+      }
+      predictionMarkers[alertId] = [];
+
+      const ekf = ekfFilters[alertId];
+      if (!ekf || !ekf.initialized) return;
+
+      const [lat, lng] = ekf.getPosition();
+      const [vLat, vLng] = ekf.getVelocity();
+
+      // If essentially stationary, skip prediction
+      if (Math.abs(vLat) < 1e-9 && Math.abs(vLng) < 1e-9) return;
+
+      const intervals = [5, 10, 15]; // seconds ahead
+      const opacities = [0.5, 0.3, 0.15];
+
+      for (let i = 0; i < intervals.length; i++) {
+        const dt = intervals[i];
+        const predLat = lat + vLat * dt;
+        const predLng = lng + vLng * dt;
+        const marker = L.circleMarker([predLat, predLng], {
+          radius: 4,
+          color: '#00f2fe',
+          fillColor: '#00f2fe',
+          fillOpacity: opacities[i],
+          opacity: opacities[i],
+          weight: 1
+        }).addTo(map);
+        predictionMarkers[alertId].push(marker);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       9. GEOFENCE ALERT ZONE (500m around initial SOS)
+    ═══════════════════════════════════════════════════════ */
+    function createGeofence(alertId, lat, lng) {
+      if (geofenceCircles[alertId]) return; // already exists
+      geofenceOrigins[alertId] = [lat, lng];
+      geofenceBreached[alertId] = false;
+      geofenceCircles[alertId] = L.circle([lat, lng], {
+        radius: 500,
+        color: '#ff2d8a',
+        weight: 1,
+        dashArray: '8 4',
+        fillColor: 'rgba(255, 45, 138, 0.08)',
+        fillOpacity: 1,
+        interactive: false
+      }).addTo(map);
+    }
+
+    function checkGeofence(alertId, lat, lng) {
+      const origin = geofenceOrigins[alertId];
+      if (!origin) return;
+      const dist = haversineDistance(origin, [lat, lng]);
+      const breached = dist > 0.5; // > 500m = 0.5 km
+      geofenceBreached[alertId] = breached;
+
+      // Update warning badge if this is the active alert
+      if (alertId === activeAlertId) {
+        const badge = document.getElementById('geofenceWarning');
+        if (badge) {
+          badge.classList.toggle('active', breached);
+        }
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       7. CONNECTION QUALITY INDICATOR
+    ═══════════════════════════════════════════════════════ */
+    function updateConnectionUI(status) {
+      connectionStatus = status;
+      const dot = document.getElementById('connDot');
+      const label = document.getElementById('connStatus');
+      if (!dot || !label) return;
+      dot.className = 'conn-dot ' + status;
+      if (status === 'connected') label.textContent = 'Connected';
+      else if (status === 'disconnected') label.textContent = 'Disconnected';
+      else label.textContent = 'Reconnecting...';
+    }
+
+    function recordUpdate() {
+      const now = Date.now();
+      lastUpdateTime = now;
+      updateTimestamps.push(now);
+
+      // Keep only last 60 seconds
+      const cutoff = now - 60000;
+      while (updateTimestamps.length > 0 && updateTimestamps[0] < cutoff) {
+        updateTimestamps.shift();
+      }
+
+      const lastEl = document.getElementById('connLastUpdate');
+      const freqEl = document.getElementById('connFrequency');
+      if (lastEl) {
+        lastEl.textContent = new Date(now).toLocaleTimeString();
+      }
+      if (freqEl) {
+        freqEl.textContent = updateTimestamps.length + ' upd/min';
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       10. SMART AUTO-PAN
+    ═══════════════════════════════════════════════════════ */
+    function smartAutoPan(alertId, lat, lng) {
+      if (alertId !== activeAlertId) return;
+      if (userDraggedMap) return;
+      const bounds = map.getBounds();
+      const latPad = (bounds.getNorth() - bounds.getSouth()) * 0.15;
+      const lngPad = (bounds.getEast() - bounds.getWest()) * 0.15;
+      const innerBounds = L.latLngBounds(
+        [bounds.getSouth() + latPad, bounds.getWest() + lngPad],
+        [bounds.getNorth() - latPad, bounds.getEast() - lngPad]
+      );
+      if (!innerBounds.contains([lat, lng])) {
+        map.panTo([lat, lng], { animate: true, duration: 0.8 });
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       4. ANIMATION QUEUE SYSTEM
+    ═══════════════════════════════════════════════════════ */
+    function enqueueAnimation(alertId, lat, lng, speedKmh) {
+      if (!animationQueues[alertId]) animationQueues[alertId] = [];
+      animationQueues[alertId].push({ lat: lat, lng: lng, speedKmh: speedKmh });
+
+      if (!animating[alertId]) {
+        processAnimationQueue(alertId);
+      }
+    }
+
+    function processAnimationQueue(alertId) {
+      const queue = animationQueues[alertId];
+      if (!queue || queue.length === 0) {
+        animating[alertId] = false;
+        return;
+      }
+      animating[alertId] = true;
+      const next = queue.shift();
+      animateMarker(alertId, next.lat, next.lng, next.speedKmh, function () {
+        processAnimationQueue(alertId);
+      });
+    }
+
+    function animateMarker(alertId, targetLat, targetLng, speedKmh, callback) {
+      const marker = markers[alertId];
+      if (!marker) {
+        if (callback) callback();
+        return;
+      }
+
+      const startLatLng = marker.getLatLng();
+      const startLat = startLatLng.lat;
+      const startLng = startLatLng.lng;
+
+      const duration = getAnimationDuration(speedKmh || 0);
+      const startTime = performance.now();
+
+      function step(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const t = 1 - Math.pow(1 - progress, 3); // cubic ease out
+        const currentLat = startLat + (targetLat - startLat) * t;
+        const currentLng = startLng + (targetLng - startLng) * t;
+        marker.setLatLng([currentLat, currentLng]);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          if (callback) callback();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       MARKER UPDATE – the heart of real-time tracking
+    ═══════════════════════════════════════════════════════ */
+    function updateMarker(alertId, rawLat, rawLng) {
+      recordUpdate();
+
+      // Initialize EKF if not existing
+      if (!ekfFilters[alertId]) {
+        ekfFilters[alertId] = new ExtendedKalmanFilter();
+      }
+
+      const ekf = ekfFilters[alertId];
+      ekf.update(rawLat, rawLng);
+
+      const [filteredLat, filteredLng] = ekf.getPosition();
+      const speedKmh = ekf.getSpeedKmh();
+      const bearing = ekf.getBearing();
+      const prevPos = lastPositions[alertId];
+      let distanceStep = 0;
+
+      if (prevPos) {
+        distanceStep = haversineDistance([prevPos.lat, prevPos.lng], [filteredLat, filteredLng]);
+        totalDistances[alertId] = (totalDistances[alertId] || 0) + distanceStep;
+      }
+
+      // Track max speed
+      if (!maxSpeeds[alertId] || speedKmh > maxSpeeds[alertId]) {
+        maxSpeeds[alertId] = speedKmh;
+      }
+
+      // Track first timestamp
+      if (!firstTimestamps[alertId]) {
+        firstTimestamps[alertId] = Date.now();
+      }
+
+      lastPositions[alertId] = { lat: filteredLat, lng: filteredLng, timestamp: Date.now() };
+
+      // Create geofence on first position
+      if (!geofenceOrigins[alertId]) {
+        createGeofence(alertId, filteredLat, filteredLng);
+      }
+
+      // 5. Update directional marker
+      markerBearings[alertId] = bearing;
+      const icon = createDirectionalIcon(bearing);
+
+      if (!markers[alertId]) {
+        markers[alertId] = L.marker([filteredLat, filteredLng], { icon: icon }).addTo(map).bindPopup('Alert #' + alertId);
+      } else {
+        markers[alertId].setIcon(icon);
+        enqueueAnimation(alertId, filteredLat, filteredLng, speedKmh);
+      }
+
+      // 6. Trail gradient
+      if (!trailCoords[alertId]) trailCoords[alertId] = [];
+      trailCoords[alertId].push([filteredLat, filteredLng]);
+      updateTrailGradient(alertId);
+
+      // 2. Predictive trajectory
+      updatePredictions(alertId);
+
+      // 9. Geofence check
+      checkGeofence(alertId, filteredLat, filteredLng);
+
+      // 10. Smart auto-pan
+      smartAutoPan(alertId, filteredLat, filteredLng);
+
+      // 8. Update telemetry HUD if this is active alert
+      if (alertId === activeAlertId) {
+        updateTelemetryHUD(alertId);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       LOAD ALERTS
+    ═══════════════════════════════════════════════════════ */
+    async function loadAlerts() {
+      const alerts = await apiGet('/alerts');
+      if (!alerts) return;
+      const list = document.getElementById('alertList');
+      list.innerHTML = '';
+      const active = alerts.filter(function (a) { return a.status === 'active'; });
+      document.getElementById('alertCount').textContent = active.length;
+      alerts.forEach(function (a) {
+        const card = document.createElement('div');
+        card.className = 'alert-card ' + a.status;
+        card.innerHTML =
+          '<div class="name">' + (a.name || 'Unknown') + ' <span style="color:#888;font-size:0.75rem">#' + a.id + '</span></div>' +
+          '<div class="meta">' + formatDate(a.timestamp) + '</div>' +
+          '<span class="status-badge ' + a.status + '">' + a.status.toUpperCase() + '</span>';
+        card.onclick = function () { openCase(a); };
+        list.appendChild(card);
+      });
+      active.forEach(function (a) { loadAndPlotLocations(a.id); });
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       LOAD & PLOT HISTORICAL LOCATIONS
+    ═══════════════════════════════════════════════════════ */
+    async function loadAndPlotLocations(alertId) {
+      const locs = await apiGet('/locations/' + alertId);
+      if (!locs || !locs.length) return;
+
+      totalDistances[alertId] = 0;
+      maxSpeeds[alertId] = 0;
+      firstTimestamps[alertId] = locs[0].timestamp ? new Date(locs[0].timestamp).getTime() : Date.now();
+
+      ekfFilters[alertId] = new ExtendedKalmanFilter();
+      const ekf = ekfFilters[alertId];
+
+      const filteredCoords = [];
+      let lastLoc = null;
+
+      for (let i = 0; i < locs.length; i++) {
+        const l = locs[i];
+        ekf.update(l.latitude, l.longitude);
+        const [fLat, fLng] = ekf.getPosition();
+        filteredCoords.push([fLat, fLng]);
+
+        if (lastLoc) {
+          totalDistances[alertId] += haversineDistance([lastLoc[0], lastLoc[1]], [fLat, fLng]);
+        }
+        lastLoc = [fLat, fLng];
+
+        const spd = ekf.getSpeedKmh();
+        if (spd > (maxSpeeds[alertId] || 0)) maxSpeeds[alertId] = spd;
+      }
+
+      // Store trail coords
+      trailCoords[alertId] = filteredCoords;
+
+      // 6. Draw gradient trail
+      updateTrailGradient(alertId);
+
+      // Place marker at last position with directional icon
+      const lastCoord = filteredCoords[filteredCoords.length - 1];
+      const bearing = ekf.getBearing();
+      markerBearings[alertId] = bearing;
+
+      if (markers[alertId]) map.removeLayer(markers[alertId]);
+      markers[alertId] = L.marker(lastCoord, { icon: createDirectionalIcon(bearing) }).addTo(map).bindPopup('Alert #' + alertId);
+
+      lastPositions[alertId] = { lat: lastCoord[0], lng: lastCoord[1], timestamp: Date.now() };
+
+      // 9. Create geofence around the first location
+      if (filteredCoords.length > 0) {
+        createGeofence(alertId, filteredCoords[0][0], filteredCoords[0][1]);
+        checkGeofence(alertId, lastCoord[0], lastCoord[1]);
+      }
+
+      // 2. Predictive trajectory
+      updatePredictions(alertId);
+
+      if (alertId === activeAlertId) {
+        updateTelemetryHUD(alertId);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       OPEN CASE DETAIL
+    ═══════════════════════════════════════════════════════ */
+    async function openCase(alert) {
+      activeAlertId = alert.id;
+      document.getElementById('detailBox').style.display = 'block';
+      await loadAndPlotLocations(alert.id);
+      if (markers[alert.id]) {
+        markers[alert.id].openPopup();
+        const pos = markers[alert.id].getLatLng();
+        map.setView(pos, Math.max(map.getZoom(), 14), { animate: true });
+      }
+
+      const media = await apiGet('/media/' + alert.id);
+      const mediaHtml = media && media.length
+        ? media.map(function (m) {
+            const url = 'http://localhost:3000' + m.file_url;
+            if (m.media_type === 'audio') return '<div class="media-item"><p>🎙 Audio</p><audio controls src="' + url + '"></audio></div>';
+            if (m.media_type === 'video') return '<div class="media-item"><p>🎥 Video</p><video controls src="' + url + '"></video></div>';
+            return '<div class="media-item"><a href="' + url + '" target="_blank">📎 File</a></div>';
+          }).join('')
+        : '<p style="color:#666;font-size:0.8rem">No evidence yet.</p>';
+
+      document.getElementById('detailContent').innerHTML =
+        '<p><strong>Victim:</strong> ' + (alert.name || 'Unknown') + '</p>' +
+        '<p><strong>Phone:</strong> ' + (alert.phone || 'N/A') + '</p>' +
+        '<p><strong>Time:</strong> ' + formatDate(alert.timestamp) + '</p>' +
+        '<p><strong>Status:</strong> ' + alert.status + '</p>' +
+
+        '<div class="swiggy-hud">' +
+          '<p class="hud-title">⚡ EKF-Engine Live Telemetry</p>' +
+          '<div class="hud-grid">' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Signal Quality</span>' +
+              '<div class="signal-bar-track"><div class="signal-bar-fill" id="telemetrySignalBar" style="width:80%;background:var(--color-success)"></div></div>' +
+              '<span class="hud-value accent-success" id="telemetrySignal" style="font-size:0.7rem">Excellent</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Current Speed</span>' +
+              '<span class="hud-value accent-blue" id="telemetrySpeed">0.0 km/h</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Average Speed</span>' +
+              '<span class="hud-value" id="telemetryAvgSpeed">0.0 km/h</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Max Speed</span>' +
+              '<span class="hud-value accent-pink" id="telemetryMaxSpeed">0.0 km/h</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Distance Traveled</span>' +
+              '<span class="hud-value" id="telemetryDistance">0.00 km</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Bearing / Heading</span>' +
+              '<span class="hud-value" id="telemetryBearing">— °(N)</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Rescue ETA</span>' +
+              '<span class="hud-value accent-pink" id="telemetryETA">Calculating...</span>' +
+            '</div>' +
+            '<div class="hud-item">' +
+              '<span class="hud-label">Prediction Confidence</span>' +
+              '<span class="hud-value accent-blue" id="telemetryConfidence">—</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="geofence-warning" id="geofenceWarning">' +
+          '⚠ Subject has left the 500m geofence zone!' +
+        '</div>' +
+
+        '<div class="detail-section">' +
+          '<h4>Evidence</h4>' +
+          '<div class="media-grid">' + mediaHtml + '</div>' +
+        '</div>' +
+        '<div class="action-row">' +
+          '<input class="assign-input" id="officerId" placeholder="Officer ID" type="number">' +
+          '<button class="btn btn-primary" onclick="assign(' + alert.id + ')">Assign</button>' +
+          '<button class="btn btn-success" onclick="resolve(' + alert.id + ')">Resolve</button>' +
+        '</div>';
+
+      // Set initial HUD + geofence warning state
+      updateTelemetryHUD(alert.id);
+      const gfBadge = document.getElementById('geofenceWarning');
+      if (gfBadge && geofenceBreached[alert.id]) {
+        gfBadge.classList.add('active');
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ASSIGN / RESOLVE
+    ═══════════════════════════════════════════════════════ */
+    async function assign(alertId) {
+      const officerId = document.getElementById('officerId').value;
+      if (!officerId) return;
+      await apiPost('/alerts/' + alertId + '/assign', { officer_id: officerId });
+      window.alert('Officer assigned successfully!');
+    }
+
+    async function resolve(alertId) {
+      await apiPost('/alerts/' + alertId + '/resolve', {});
+      document.getElementById('detailBox').style.display = 'none';
+      activeAlertId = null;
+      loadAlerts();
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       8. ENHANCED TELEMETRY HUD UPDATE
+    ═══════════════════════════════════════════════════════ */
+    function animateValue(elementId, newText) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (el.textContent === newText) return;
+      el.classList.add('hud-value-animate', 'updating');
+      setTimeout(function () {
+        el.textContent = newText;
+        el.classList.remove('updating');
+      }, 150);
+    }
+
+    function updateTelemetryHUD(alertId) {
+      const ekf = ekfFilters[alertId];
+      if (!ekf || !ekf.initialized) return;
+
+      const speedKmh = ekf.getSpeedKmh();
+      const bearing = ekf.getBearing();
+      const compass = bearingToCompass(bearing);
+      const totalDist = totalDistances[alertId] || 0;
+      const maxSpd = maxSpeeds[alertId] || 0;
+      const [lat, lng] = ekf.getPosition();
+
+      // Average speed
+      const elapsed = (Date.now() - (firstTimestamps[alertId] || Date.now())) / 1000 / 3600; // hours
+      const avgSpeed = elapsed > 0 ? totalDist / elapsed : 0;
+
+      // Signal quality from EKF estimation error
+      const estError = ekf.getEstimationError();
+      let signalPct = Math.max(0, Math.min(100, 100 - estError * 100000));
+      let signalLabel = 'Excellent';
+      let signalColor = 'var(--color-success)';
+      if (signalPct < 40) { signalLabel = 'Poor'; signalColor = 'var(--color-danger)'; }
+      else if (signalPct < 70) { signalLabel = 'Good'; signalColor = '#f5a623'; }
+
+      // Prediction confidence from covariance magnitude
+      const covMag = ekf.getCovarianceMagnitude();
+      let confPct = Math.max(0, Math.min(100, 100 - covMag * 50000));
+      let confLabel = confPct.toFixed(0) + '% (' + (confPct > 70 ? 'High' : confPct > 40 ? 'Medium' : 'Low') + ')';
+
+      // Rescue ETA
+      const baseCoords = [lat + 0.015, lng - 0.012]; // Simulated dispatch squad
+      const distToVictim = haversineDistance([lat, lng], baseCoords);
+      const rawETA = (distToVictim / 40) * 60;
+      const finalETA = Math.max(Math.ceil(rawETA), 1);
+
+      // Update UI with animated transitions
+      animateValue('telemetrySpeed', speedKmh.toFixed(1) + ' km/h');
+      animateValue('telemetryAvgSpeed', avgSpeed.toFixed(1) + ' km/h');
+      animateValue('telemetryMaxSpeed', maxSpd.toFixed(1) + ' km/h');
+      animateValue('telemetryDistance', totalDist.toFixed(2) + ' km');
+      animateValue('telemetryBearing', bearing.toFixed(0) + '° (' + compass + ')');
+      animateValue('telemetryETA', finalETA + ' min (Dispatch enroute)');
+      animateValue('telemetryConfidence', confLabel);
+
+      // Signal quality bar
+      const signalBar = document.getElementById('telemetrySignalBar');
+      if (signalBar) {
+        signalBar.style.width = signalPct + '%';
+        signalBar.style.background = signalColor;
+      }
+      const signalEl = document.getElementById('telemetrySignal');
+      if (signalEl) {
+        signalEl.textContent = signalLabel;
+        signalEl.style.color = signalColor;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       NOTIFICATIONS
+    ═══════════════════════════════════════════════════════ */
+    function showNotification(msg) {
+      if (Notification.permission === 'granted') new Notification('KALI', { body: msg });
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SOCKET.IO SETUP
+    ═══════════════════════════════════════════════════════ */
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', function () {
+      updateConnectionUI('connected');
+    });
+
+    socket.on('disconnect', function () {
+      updateConnectionUI('disconnected');
+    });
+
+    socket.on('reconnecting', function () {
+      updateConnectionUI('reconnecting');
+    });
+
+    socket.on('reconnect_attempt', function () {
+      updateConnectionUI('reconnecting');
+    });
+
+    socket.on('newAlert', function () {
+      loadAlerts();
+      showNotification('New SOS alert received!');
+    });
+
+    socket.on('locationUpdate', function (d) {
+      updateMarker(d.alertId, d.latitude, d.longitude);
+    });
+
+    socket.on('alertResolved', function () {
+      loadAlerts();
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       INITIALIZATION
+    ═══════════════════════════════════════════════════════ */
+    Notification.requestPermission();
+    updateConnectionUI('disconnected');
+    loadAlerts();
+    setInterval(loadAlerts, 20000);
+  </script>
+</body>
+</html>

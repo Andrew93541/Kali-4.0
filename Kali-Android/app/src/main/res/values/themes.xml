@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Kali" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/kali_pink</item>
+        <item name="colorPrimaryDark">@color/kali_dark</item>
+        <item name="colorAccent">@color/kali_pink</item>
+        <item name="android:windowBackground">@color/kali_bg</item>
+        <item name="android:statusBarColor">@color/kali_dark</item>
+    </style>
+</resources>
