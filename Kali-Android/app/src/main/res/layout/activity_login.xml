@@ -1,193 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="@color/kali_bg"
-    android:padding="32dp">
-
-    <TextView
-        android:text="KALI"
-        android:textSize="40sp"
-        android:textColor="@color/kali_pink"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:text="Sign in to continue"
-        android:textSize="14sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="40dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:boxBackgroundColor="@color/kali_surface"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etEmail"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/kali_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:boxBackgroundColor="@color/kali_surface"
-        app:passwordToggleEnabled="true"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPassword"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColor="@color/kali_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogin"
-        android:text="Sign In"
-        app:backgroundTint="@color/kali_pink"
-        android:textColor="@color/white"
-        app:cornerRadius="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:background="#33FFFFFF"/>
-        <TextView
-            android:text="OR"
-            android:textColor="#55FFFFFF"
-            android:textSize="12sp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:background="#33FFFFFF"/>
-    </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnGoogleSignIn"
-        android:text="Continue with Google"
-        app:backgroundTint="@color/kali_surface"
-        android:textColor="@color/white"
-        app:strokeColor="#33FFFFFF"
-        app:strokeWidth="1dp"
-        app:icon="@drawable/ic_google"
-        app:iconTint="@null"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp"
-        app:cornerRadius="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"/>
+    android:fillViewport="true"
+    android:background="@color/kali_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/kali_surface"
-        android:padding="12dp"
-        android:layout_marginBottom="24dp">
+        android:gravity="center_horizontal"
+        android:padding="24dp">
 
-        <TextView
-            android:text="Demo Accounts for Testing"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"
+        <!-- Server Settings Header Action Row -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/btnServerSettings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_demo_badge"
+                android:src="@android:drawable/ic_menu_preferences"
+                app:tint="@color/white"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="Server Settings" />
+        </RelativeLayout>
+
+        <!-- Glowing Brand Logo Section -->
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="28dp">
 
+            <TextView
+                android:text="K A L I"
+                android:textSize="44sp"
+                android:textColor="#FF2D8A"
+                android:textStyle="bold"
+                android:letterSpacing="0.2"
+                android:shadowColor="#80FF2D8A"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="TACTICAL SAFETY NETWORK"
+                android:textSize="11sp"
+                android:textColor="#00F2FE"
+                android:textStyle="bold"
+                android:letterSpacing="0.3"
+                android:shadowColor="#8000F2FE"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Main Authentication Card (Glassmorphic) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_glass"
+            android:padding="24dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:text="SECURE LOG IN"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!-- Email Field -->
+            <TextView
+                android:text="EMAIL ADDRESS"
+                android:textColor="#88FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:layout_marginBottom="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="name@provider.com"
+                android:textColorHint="#4F4F7A"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:importantForAutofill="yes"/>
+
+            <!-- Password Field -->
+            <TextView
+                android:text="ACCESS PASSWORD"
+                android:textColor="#88FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:layout_marginBottom="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="••••••••"
+                android:textColorHint="#4F4F7A"
+                android:inputType="textPassword"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                android:importantForAutofill="yes"/>
+
+            <!-- Action button styled with neon gradient shape -->
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@drawable/bg_gradient_button"
+                app:backgroundTint="@null"
+                android:text="AUTHENTICATE NOW"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#15FFFFFF"/>
+                <TextView
+                    android:text="SECURE SINGLE SIGN-ON"
+                    android:textColor="#3D3D60"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#15FFFFFF"/>
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDemoUser"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:text="User"
+                android:id="@+id/btnGoogleSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Continue with Google"
+                app:backgroundTint="#0A0A10"
                 android:textColor="@color/white"
-                app:strokeColor="#33FFFFFF"
-                android:textSize="11sp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                app:cornerRadius="6dp"
+                app:strokeColor="#25213D"
+                app:strokeWidth="1.5dp"
+                app:icon="@drawable/ic_google"
+                app:iconTint="@null"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:cornerRadius="12dp"
                 android:insetTop="0dp"
-                android:insetBottom="0dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDemoGuardian"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:text="Guardian"
-                android:textColor="@color/white"
-                app:strokeColor="#33FFFFFF"
-                android:textSize="11sp"
-                android:layout_width="0dp"
-                android:layout_weight="1.2"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
-                app:cornerRadius="6dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDemoPolice"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:text="Police"
-                android:textColor="@color/white"
-                app:strokeColor="#33FFFFFF"
-                android:textSize="11sp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                app:cornerRadius="6dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"/>
+                android:insetBottom="0dp"
+                android:textSize="13sp"/>
         </LinearLayout>
+
+        <!-- Sandbox Demo Cards -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_glass"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:text="QUICK ACCESS DEMO PROFILES"
+                android:textColor="#FF2D8A"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDemoUser"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="48dp"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_demo_badge"
+                    android:text="Victim"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDemoGuardian"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.2"
+                    android:layout_height="48dp"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_demo_badge"
+                    android:text="Guardian"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDemoPolice"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="48dp"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_demo_badge"
+                    android:text="Police"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Navigation Footer -->
+        <TextView
+            android:id="@+id/tvSignUpLink"
+            android:text="Don't have an account? Create Terminal profile"
+            android:textColor="#59557D"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginBottom="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvSignUpLink"
-        android:text="Don't have an account? Sign Up"
-        android:textColor="#88FFFFFF"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-</LinearLayout>
-
+</ScrollView>

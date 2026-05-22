@@ -4,7 +4,6 @@ package com.kali.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -23,10 +22,16 @@ public final class ActivityRegisterBinding implements ViewBinding {
   private final ScrollView rootView;
 
   @NonNull
-  public final AutoCompleteTextView actvRole;
+  public final MaterialButton btnRegister;
 
   @NonNull
-  public final MaterialButton btnRegister;
+  public final MaterialButton chipGuardian;
+
+  @NonNull
+  public final MaterialButton chipPolice;
+
+  @NonNull
+  public final MaterialButton chipUser;
 
   @NonNull
   public final TextInputEditText etEmail;
@@ -41,20 +46,27 @@ public final class ActivityRegisterBinding implements ViewBinding {
   public final TextInputEditText etPhone;
 
   @NonNull
+  public final TextView tvSelectedRole;
+
+  @NonNull
   public final TextView tvSignInLink;
 
-  private ActivityRegisterBinding(@NonNull ScrollView rootView,
-      @NonNull AutoCompleteTextView actvRole, @NonNull MaterialButton btnRegister,
-      @NonNull TextInputEditText etEmail, @NonNull TextInputEditText etName,
-      @NonNull TextInputEditText etPassword, @NonNull TextInputEditText etPhone,
+  private ActivityRegisterBinding(@NonNull ScrollView rootView, @NonNull MaterialButton btnRegister,
+      @NonNull MaterialButton chipGuardian, @NonNull MaterialButton chipPolice,
+      @NonNull MaterialButton chipUser, @NonNull TextInputEditText etEmail,
+      @NonNull TextInputEditText etName, @NonNull TextInputEditText etPassword,
+      @NonNull TextInputEditText etPhone, @NonNull TextView tvSelectedRole,
       @NonNull TextView tvSignInLink) {
     this.rootView = rootView;
-    this.actvRole = actvRole;
     this.btnRegister = btnRegister;
+    this.chipGuardian = chipGuardian;
+    this.chipPolice = chipPolice;
+    this.chipUser = chipUser;
     this.etEmail = etEmail;
     this.etName = etName;
     this.etPassword = etPassword;
     this.etPhone = etPhone;
+    this.tvSelectedRole = tvSelectedRole;
     this.tvSignInLink = tvSignInLink;
   }
 
@@ -85,15 +97,27 @@ public final class ActivityRegisterBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.actvRole;
-      AutoCompleteTextView actvRole = ViewBindings.findChildViewById(rootView, id);
-      if (actvRole == null) {
-        break missingId;
-      }
-
       id = R.id.btnRegister;
       MaterialButton btnRegister = ViewBindings.findChildViewById(rootView, id);
       if (btnRegister == null) {
+        break missingId;
+      }
+
+      id = R.id.chipGuardian;
+      MaterialButton chipGuardian = ViewBindings.findChildViewById(rootView, id);
+      if (chipGuardian == null) {
+        break missingId;
+      }
+
+      id = R.id.chipPolice;
+      MaterialButton chipPolice = ViewBindings.findChildViewById(rootView, id);
+      if (chipPolice == null) {
+        break missingId;
+      }
+
+      id = R.id.chipUser;
+      MaterialButton chipUser = ViewBindings.findChildViewById(rootView, id);
+      if (chipUser == null) {
         break missingId;
       }
 
@@ -121,14 +145,20 @@ public final class ActivityRegisterBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvSelectedRole;
+      TextView tvSelectedRole = ViewBindings.findChildViewById(rootView, id);
+      if (tvSelectedRole == null) {
+        break missingId;
+      }
+
       id = R.id.tvSignInLink;
       TextView tvSignInLink = ViewBindings.findChildViewById(rootView, id);
       if (tvSignInLink == null) {
         break missingId;
       }
 
-      return new ActivityRegisterBinding((ScrollView) rootView, actvRole, btnRegister, etEmail,
-          etName, etPassword, etPhone, tvSignInLink);
+      return new ActivityRegisterBinding((ScrollView) rootView, btnRegister, chipGuardian,
+          chipPolice, chipUser, etEmail, etName, etPassword, etPhone, tvSelectedRole, tvSignInLink);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

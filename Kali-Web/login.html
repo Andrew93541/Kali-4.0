@@ -1,81 +1,466 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kali – Login</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KALI — Sign In</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Background pulse orbs ───────────────────────────── */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0;
+      animation: orbPulse 8s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,45,138,0.35) 0%, transparent 70%);
+      top: -120px; left: -120px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,242,254,0.25) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation-delay: 3s;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,45,138,0.18) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 5.5s;
+    }
+    @keyframes orbPulse {
+      0%   { opacity: 0;    transform: scale(0.8); }
+      50%  { opacity: 1;    transform: scale(1.1); }
+      100% { opacity: 0;    transform: scale(0.8); }
+    }
+
+    /* ── Shield icon ─────────────────────────────────────── */
+    .shield-wrap {
+      position: relative;
+      width: 90px; height: 90px;
+      margin: 0 auto 20px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .shield-emoji {
+      font-size: 3rem;
+      position: relative;
+      z-index: 2;
+      animation: shieldFloat 3s ease-in-out infinite;
+    }
+    .shield-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,45,138,0.6);
+      animation: ringPulse 2s ease-out infinite;
+    }
+    .shield-ring-2 {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,45,138,0.3);
+      animation: ringPulse 2s ease-out infinite 0.5s;
+    }
+    @keyframes shieldFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-6px); }
+    }
+    @keyframes ringPulse {
+      0%   { transform: scale(0.85); opacity: 1; }
+      100% { transform: scale(1.4);  opacity: 0; }
+    }
+
+    /* ── Card extras ─────────────────────────────────────── */
+    .login-box {
+      position: relative;
+      z-index: 1;
+    }
+    .kali-title {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 900;
+      letter-spacing: 6px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .kali-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 30px;
+    }
+
+    /* ── Password wrapper ────────────────────────────────── */
+    .pw-wrap {
+      position: relative;
+    }
+    .pw-wrap input {
+      padding-right: 44px;
+    }
+    .pw-toggle {
+      position: absolute;
+      right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-secondary); font-size: 1.1rem;
+      padding: 4px; line-height: 1;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: var(--accent-pink); }
+
+    /* ── Sign-in button ──────────────────────────────────── */
+    .btn-signin {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent-pink) 0%, #c2185b 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 20px var(--accent-pink-glow);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    .btn-signin:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px var(--accent-pink-glow);
+    }
+    .btn-signin:disabled {
+      opacity: 0.7; cursor: not-allowed;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Error ───────────────────────────────────────────── */
+    .error-msg {
+      display: none;
+      color: var(--color-danger);
+      background: rgba(255,74,74,0.1);
+      border: 1px solid rgba(255,74,74,0.25);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      text-align: center;
+      margin-top: 12px;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-6px); }
+      80%       { transform: translateX(4px); }
+    }
+    .shake { animation: shake 0.45s ease; }
+
+    /* ── Demo accounts ───────────────────────────────────── */
+    .demo-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 22px;
+    }
+    .demo-card h3 {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .demo-btns {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .demo-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      width: 100%;
+      color: var(--text-primary);
+    }
+    .demo-btn:hover {
+      background: rgba(255,45,138,0.08);
+      border-color: rgba(255,45,138,0.3);
+      transform: translateX(3px);
+    }
+    .demo-btn .demo-icon { font-size: 1.2rem; }
+    .demo-btn .demo-info { flex: 1; }
+    .demo-btn .demo-role {
+      font-family: var(--font-display);
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .demo-btn .demo-email {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .demo-btn .demo-fill {
+      font-size: 0.7rem;
+      color: var(--accent-pink);
+      font-weight: 600;
+    }
+
+    /* ── Footer link ─────────────────────────────────────── */
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+    .register-link a {
+      color: var(--accent-pink);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .register-link a:hover { text-decoration: underline; }
+
+    /* ── Success banner (from register redirect) ─────────── */
+    .success-banner {
+      display: none;
+      background: rgba(0,230,118,0.12);
+      border: 1px solid rgba(0,230,118,0.3);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      color: var(--color-success);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+  </style>
 </head>
 <body>
+  <!-- Background orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
   <div class="login-wrap">
     <div class="login-box">
-      <h1>KALI</h1>
-      <p>Women's Safety System – Sign In</p>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••">
-      </div>
-      <button class="btn-full" onclick="doLogin()">Sign In</button>
-      <p class="error-msg" id="errMsg"></p>
 
-      <div class="demo-accounts-card" style="margin-top: 24px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius-md);">
-        <p style="margin-bottom: 10px; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent-blue); text-align: left; margin-top: 0;">Demo Accounts for Testing</p>
-        <div style="font-size: 0.78rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
-            <span><strong>User (Victim):</strong> user@kali.com</span>
-            <button onclick="fillCredentials('user@kali.com', 'user123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
+      <!-- Shield icon -->
+      <div class="shield-wrap">
+        <span class="shield-emoji">🛡️</span>
+        <div class="shield-ring"></div>
+        <div class="shield-ring-2"></div>
+      </div>
+
+      <div class="kali-title">KALI</div>
+      <div class="kali-subtitle">Empowering Women. Enabling Safety.</div>
+
+      <!-- Success banner from register redirect -->
+      <div class="success-banner" id="successBanner">
+        ✅ Account created! Please sign in to continue.
+      </div>
+
+      <!-- Login form -->
+      <form id="loginForm" autocomplete="on" novalidate>
+        <div class="form-group">
+          <label for="emailInput">Email Address</label>
+          <input
+            type="email"
+            id="emailInput"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="passwordInput">Password</label>
+          <div class="pw-wrap">
+            <input
+              type="password"
+              id="passwordInput"
+              name="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="pw-toggle" id="pwToggle" title="Show / hide password">
+              👁
+            </button>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
-            <span><strong>Guardian:</strong> guardian@kali.com</span>
-            <button onclick="fillCredentials('guardian@kali.com', 'guardian123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 2px;">
-            <span><strong>Police (Admin):</strong> admin@kali.com</span>
-            <button onclick="fillCredentials('admin@kali.com', 'admin123')" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-blue); color: var(--text-primary); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-sans);">Auto Fill</button>
-          </div>
+        </div>
+
+        <button type="submit" class="btn-signin" id="signinBtn">
+          <span class="spinner" id="spinner"></span>
+          <span id="signinLabel">SIGN IN</span>
+        </button>
+
+        <div class="error-msg" id="errorMsg"></div>
+      </form>
+
+      <!-- Demo accounts -->
+      <div class="demo-card">
+        <h3>Quick Demo Access</h3>
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="fillDemo('victim@kali.app','password123')">
+            <span class="demo-icon">🛡️</span>
+            <span class="demo-info">
+              <div class="demo-role">User (Victim)</div>
+              <div class="demo-email">victim@kali.app</div>
+            </span>
+            <span class="demo-fill">Auto-fill →</span>
+          </button>
+          <button class="demo-btn" onclick="fillDemo('guardian@kali.app','password123')">
+            <span class="demo-icon">👨‍👩‍👧</span>
+            <span class="demo-info">
+              <div class="demo-role">Guardian (Family)</div>
+              <div class="demo-email">guardian@kali.app</div>
+            </span>
+            <span class="demo-fill">Auto-fill →</span>
+          </button>
+          <button class="demo-btn" onclick="fillDemo('admin@kali.app','password123')">
+            <span class="demo-icon">👮</span>
+            <span class="demo-info">
+              <div class="demo-role">Police / Admin</div>
+              <div class="demo-email">admin@kali.app</div>
+            </span>
+            <span class="demo-fill">Auto-fill →</span>
+          </button>
         </div>
       </div>
 
-      <p style="text-align:center;margin-top:20px;font-size:0.85rem;color:#888">
-        No account? <a href="register.html" style="color:#e91e8c">Register</a>
+      <p class="register-link">
+        Don't have an account? <a href="register.html">Create one</a>
       </p>
     </div>
   </div>
+
   <script src="js/api.js"></script>
   <script>
-    if (getToken()) redirectByRole();
+    /* ── Redirect if already logged in ──────────────────── */
+    (function() {
+      const token = getToken();
+      const role  = getRole();
+      if (token && role) {
+        routeByRole(role);
+      }
+    })();
 
-    function fillCredentials(email, password) {
-      document.getElementById('email').value = email;
-      document.getElementById('password').value = password;
-      const err = document.getElementById('errMsg');
-      err.style.display = 'none';
+    /* ── Show success banner from register redirect ─────── */
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('success') === '1') {
+        document.getElementById('successBanner').style.display = 'block';
+      }
+    })();
+
+    /* ── Password show/hide ──────────────────────────────── */
+    const pwInput  = document.getElementById('passwordInput');
+    const pwToggle = document.getElementById('pwToggle');
+    let pwVisible = false;
+    pwToggle.addEventListener('click', () => {
+      pwVisible = !pwVisible;
+      pwInput.type = pwVisible ? 'text' : 'password';
+      pwToggle.textContent = pwVisible ? '🙈' : '👁';
+    });
+
+    /* ── Demo autofill ───────────────────────────────────── */
+    function fillDemo(email, password) {
+      document.getElementById('emailInput').value = email;
+      document.getElementById('passwordInput').value = password;
+      document.getElementById('emailInput').focus();
     }
 
-    async function doLogin() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const data = await login(email, password);
-      if (data.token) {
-        redirectByRole();
-      } else {
-        const err = document.getElementById('errMsg');
-        err.textContent = data.error || 'Login failed';
-        err.style.display = 'block';
+    /* ── Form submit ─────────────────────────────────────── */
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin(e);
+    });
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email    = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const errDiv   = document.getElementById('errorMsg');
+
+      if (!email || !password) {
+        showError('Please enter your email and password.');
+        return;
+      }
+
+      setLoading(true);
+      errDiv.style.display = 'none';
+
+      try {
+        const data = await login(email, password);
+        if (data.token) {
+          routeByRole(data.role);
+        } else {
+          showError(data.message || data.error || 'Invalid credentials. Please try again.');
+        }
+      } catch (err) {
+        showError('Network error. Please check your connection.');
+      } finally {
+        setLoading(false);
       }
     }
 
-    function redirectByRole() {
-      const role = getRole();
-      if (role === 'Admin') window.location.href = 'police/index.html';
-      else window.location.href = 'guardian/index.html';
+    function setLoading(on) {
+      const btn    = document.getElementById('signinBtn');
+      const spinner = document.getElementById('spinner');
+      const label  = document.getElementById('signinLabel');
+      btn.disabled = on;
+      spinner.style.display = on ? 'block' : 'none';
+      label.textContent = on ? 'Signing in…' : 'SIGN IN';
     }
 
-    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    function showError(msg) {
+      const errDiv = document.getElementById('errorMsg');
+      errDiv.textContent = '⚠ ' + msg;
+      errDiv.style.display = 'block';
+      errDiv.classList.remove('shake');
+      void errDiv.offsetWidth; // force reflow
+      errDiv.classList.add('shake');
+    }
+
+    function routeByRole(role) {
+      if (role === 'User')     window.location.href = 'user/index.html';
+      else if (role === 'Guardian') window.location.href = 'guardian/index.html';
+      else                     window.location.href = 'police/index.html';
+    }
   </script>
 </body>
 </html>

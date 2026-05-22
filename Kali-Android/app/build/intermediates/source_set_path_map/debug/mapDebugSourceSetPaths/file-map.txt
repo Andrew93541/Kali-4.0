@@ -1,50 +1,51 @@
-com.kali.app-jetified-lifecycle-livedata-core-ktx-2.7.0-0 C:\Users\prite\.gradle\caches\transforms-3\0b94bc29465ca70e83ab373ee4332ee0\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
-com.kali.app-jetified-room-ktx-2.6.1-1 C:\Users\prite\.gradle\caches\transforms-3\11aa5cf54a2f06746f7c238ed00898cb\transformed\jetified-room-ktx-2.6.1\res
-com.kali.app-jetified-profileinstaller-1.3.0-2 C:\Users\prite\.gradle\caches\transforms-3\13be1f166e65f17209893886934d7ff9\transformed\jetified-profileinstaller-1.3.0\res
-com.kali.app-core-runtime-2.2.0-3 C:\Users\prite\.gradle\caches\transforms-3\19419ab6a45ae9bbacdecb607228d8d1\transformed\core-runtime-2.2.0\res
-com.kali.app-jetified-emoji2-1.2.0-4 C:\Users\prite\.gradle\caches\transforms-3\1a297875ceefdfe8d232c546a5b3f0ef\transformed\jetified-emoji2-1.2.0\res
-com.kali.app-jetified-annotation-experimental-1.3.0-5 C:\Users\prite\.gradle\caches\transforms-3\1f31f14c0050fd4407ef2a810c6d3fc9\transformed\jetified-annotation-experimental-1.3.0\res
-com.kali.app-jetified-lifecycle-runtime-ktx-2.7.0-6 C:\Users\prite\.gradle\caches\transforms-3\200a2d7684038d18ebac8f8dd2ac70b2\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
-com.kali.app-jetified-savedstate-ktx-1.2.1-7 C:\Users\prite\.gradle\caches\transforms-3\44d3dbc691ca58dd8af179bdd8ecbd49\transformed\jetified-savedstate-ktx-1.2.1\res
-com.kali.app-material-1.11.0-8 C:\Users\prite\.gradle\caches\transforms-3\48472ad5b75fafe48008da26145d2873\transformed\material-1.11.0\res
-com.kali.app-drawerlayout-1.1.1-9 C:\Users\prite\.gradle\caches\transforms-3\4b56c533aa57fee828ff82dfe6da51de\transformed\drawerlayout-1.1.1\res
-com.kali.app-transition-1.2.0-10 C:\Users\prite\.gradle\caches\transforms-3\4bcea7878ce5f8f94682ebf770a18523\transformed\transition-1.2.0\res
-com.kali.app-jetified-emoji2-views-helper-1.2.0-11 C:\Users\prite\.gradle\caches\transforms-3\4ce51d733af035173805cacdb09cea4e\transformed\jetified-emoji2-views-helper-1.2.0\res
-com.kali.app-jetified-viewpager2-1.0.0-12 C:\Users\prite\.gradle\caches\transforms-3\569aa9ab6cf61b2dcffb7258736dd170\transformed\jetified-viewpager2-1.0.0\res
-com.kali.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-13 C:\Users\prite\.gradle\caches\transforms-3\5f48a42fd8b643d343107e44dc522716\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
-com.kali.app-jetified-play-services-base-18.1.0-14 C:\Users\prite\.gradle\caches\transforms-3\5f8a6959f62a322e29950cf05db2fdbf\transformed\jetified-play-services-base-18.1.0\res
-com.kali.app-recyclerview-1.1.0-15 C:\Users\prite\.gradle\caches\transforms-3\622721f4182bdc5dd5ad73308294b859\transformed\recyclerview-1.1.0\res
-com.kali.app-sqlite-2.4.0-16 C:\Users\prite\.gradle\caches\transforms-3\62b65a3f4e5e360fff7a33334bd0c4bd\transformed\sqlite-2.4.0\res
-com.kali.app-lifecycle-viewmodel-2.7.0-17 C:\Users\prite\.gradle\caches\transforms-3\6460189ec9407768cc9669b0d06fb925\transformed\lifecycle-viewmodel-2.7.0\res
-com.kali.app-jetified-lifecycle-livedata-ktx-2.7.0-18 C:\Users\prite\.gradle\caches\transforms-3\688d4717e0cad981f78ac91ce6316173\transformed\jetified-lifecycle-livedata-ktx-2.7.0\res
-com.kali.app-lifecycle-livedata-core-2.7.0-19 C:\Users\prite\.gradle\caches\transforms-3\6a150779103f7018253c403151b33c99\transformed\lifecycle-livedata-core-2.7.0\res
-com.kali.app-jetified-appcompat-resources-1.6.1-20 C:\Users\prite\.gradle\caches\transforms-3\6d92154ab6cd5d063244a30876a6b159\transformed\jetified-appcompat-resources-1.6.1\res
-com.kali.app-jetified-lifecycle-process-2.7.0-21 C:\Users\prite\.gradle\caches\transforms-3\6f3f8273b7da251af1f90330577a57e2\transformed\jetified-lifecycle-process-2.7.0\res
-com.kali.app-fragment-1.3.6-22 C:\Users\prite\.gradle\caches\transforms-3\74f45bdfb0864b49fa3ecd31a3909bb5\transformed\fragment-1.3.6\res
-com.kali.app-jetified-savedstate-1.2.1-23 C:\Users\prite\.gradle\caches\transforms-3\7db770fcafef0b732e51f487e6ed30ed\transformed\jetified-savedstate-1.2.1\res
-com.kali.app-jetified-play-services-auth-20.7.0-24 C:\Users\prite\.gradle\caches\transforms-3\8b30cdb2e3a60cc078194aeeedae23d8\transformed\jetified-play-services-auth-20.7.0\res
-com.kali.app-sqlite-framework-2.4.0-25 C:\Users\prite\.gradle\caches\transforms-3\8d89ab7dacd1011a28c4017d293fd2bc\transformed\sqlite-framework-2.4.0\res
-com.kali.app-jetified-lifecycle-service-2.7.0-26 C:\Users\prite\.gradle\caches\transforms-3\92342906bc2fc40f85d6e1a6e1b6539a\transformed\jetified-lifecycle-service-2.7.0\res
-com.kali.app-lifecycle-livedata-2.7.0-27 C:\Users\prite\.gradle\caches\transforms-3\9be2cb36005361f269924fd5bd21ce72\transformed\lifecycle-livedata-2.7.0\res
-com.kali.app-jetified-core-ktx-1.12.0-28 C:\Users\prite\.gradle\caches\transforms-3\9d0a6ec7ae213778772a265fbf19ded3\transformed\jetified-core-ktx-1.12.0\res
-com.kali.app-jetified-activity-ktx-1.8.2-29 C:\Users\prite\.gradle\caches\transforms-3\b41b8d12165b2583f537e4640e943123\transformed\jetified-activity-ktx-1.8.2\res
-com.kali.app-jetified-startup-runtime-1.1.1-30 C:\Users\prite\.gradle\caches\transforms-3\b614992192ea01c079d8cc9d6806ef6b\transformed\jetified-startup-runtime-1.1.1\res
-com.kali.app-jetified-play-services-basement-18.2.0-31 C:\Users\prite\.gradle\caches\transforms-3\b8e9b4db7c7aba22ad94c1ad4b7844dc\transformed\jetified-play-services-basement-18.2.0\res
-com.kali.app-constraintlayout-2.0.1-32 C:\Users\prite\.gradle\caches\transforms-3\bc622935c7f9aa9eca68cce3180af7d6\transformed\constraintlayout-2.0.1\res
-com.kali.app-coordinatorlayout-1.1.0-33 C:\Users\prite\.gradle\caches\transforms-3\c00270e702439f4cdf9093185c5cafdc\transformed\coordinatorlayout-1.1.0\res
-com.kali.app-jetified-activity-1.8.2-34 C:\Users\prite\.gradle\caches\transforms-3\c156aeb49ffccec132c9777e8c38221b\transformed\jetified-activity-1.8.2\res
-com.kali.app-work-runtime-ktx-2.9.0-35 C:\Users\prite\.gradle\caches\transforms-3\c2e4776ad350579d0bede261544ed46f\transformed\work-runtime-ktx-2.9.0\res
-com.kali.app-room-runtime-2.6.1-36 C:\Users\prite\.gradle\caches\transforms-3\c4a9e67dcfb25056dcda104d909ea056\transformed\room-runtime-2.6.1\res
-com.kali.app-work-runtime-2.9.0-37 C:\Users\prite\.gradle\caches\transforms-3\c5d80524b1b2e9eefdbd8306fa1cb31e\transformed\work-runtime-2.9.0\res
-com.kali.app-cardview-1.0.0-38 C:\Users\prite\.gradle\caches\transforms-3\d6813058536edaa49417e20e2d45bae9\transformed\cardview-1.0.0\res
-com.kali.app-jetified-lifecycle-viewmodel-ktx-2.7.0-39 C:\Users\prite\.gradle\caches\transforms-3\dc64ef92272174808a84bd267b4c4ef3\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
-com.kali.app-lifecycle-runtime-2.7.0-40 C:\Users\prite\.gradle\caches\transforms-3\eaa0e377a2030f55a107d524edcaed5a\transformed\lifecycle-runtime-2.7.0\res
-com.kali.app-appcompat-1.6.1-41 C:\Users\prite\.gradle\caches\transforms-3\ec5621c246d34e90b4800280c4ceea5f\transformed\appcompat-1.6.1\res
-com.kali.app-core-1.12.0-42 C:\Users\prite\.gradle\caches\transforms-3\ff75e749bd61bcb7e15c1cfdef90c524\transformed\core-1.12.0\res
-com.kali.app-pngs-43 D:\desktop dara\Kali 4.0\Kali-Android\app\build\generated\res\pngs\debug
-com.kali.app-resValues-44 D:\desktop dara\Kali 4.0\Kali-Android\app\build\generated\res\resValues\debug
-com.kali.app-packageDebugResources-45 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.kali.app-packageDebugResources-46 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.kali.app-debug-47 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.kali.app-debug-48 D:\desktop dara\Kali 4.0\Kali-Android\app\src\debug\res
-com.kali.app-main-49 D:\desktop dara\Kali 4.0\Kali-Android\app\src\main\res
+com.kali.app-jetified-appcompat-resources-1.6.1-0 C:\Users\prite\.gradle\caches\8.9\transforms\0768b581c1f51d1685c10dfdb9f3b8bc\transformed\jetified-appcompat-resources-1.6.1\res
+com.kali.app-jetified-emoji2-views-helper-1.2.0-1 C:\Users\prite\.gradle\caches\8.9\transforms\093893f54bec62a68f939d970e29e09c\transformed\jetified-emoji2-views-helper-1.2.0\res
+com.kali.app-jetified-profileinstaller-1.3.0-2 C:\Users\prite\.gradle\caches\8.9\transforms\0af7bdc72bf30e95be44700eb7ce05ef\transformed\jetified-profileinstaller-1.3.0\res
+com.kali.app-constraintlayout-2.0.1-3 C:\Users\prite\.gradle\caches\8.9\transforms\0d211724c408e8b26c53992be899a5af\transformed\constraintlayout-2.0.1\res
+com.kali.app-lifecycle-livedata-core-2.7.0-4 C:\Users\prite\.gradle\caches\8.9\transforms\14ce7a35e419220d380c258525446912\transformed\lifecycle-livedata-core-2.7.0\res
+com.kali.app-lifecycle-livedata-2.7.0-5 C:\Users\prite\.gradle\caches\8.9\transforms\1964d71330cdc06ad676280535aaa883\transformed\lifecycle-livedata-2.7.0\res
+com.kali.app-jetified-lifecycle-runtime-ktx-2.7.0-6 C:\Users\prite\.gradle\caches\8.9\transforms\1d4b9be69df0b27f25c1c545cd14a237\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
+com.kali.app-recyclerview-1.1.0-7 C:\Users\prite\.gradle\caches\8.9\transforms\2acd90ccf200f3a7db6216ff946847f4\transformed\recyclerview-1.1.0\res
+com.kali.app-jetified-lifecycle-service-2.7.0-8 C:\Users\prite\.gradle\caches\8.9\transforms\2e149c4f1ca81813e83ff0da5c3217c0\transformed\jetified-lifecycle-service-2.7.0\res
+com.kali.app-jetified-play-services-auth-20.7.0-9 C:\Users\prite\.gradle\caches\8.9\transforms\2fa1a19d8043e3fd40a5990acbe045da\transformed\jetified-play-services-auth-20.7.0\res
+com.kali.app-jetified-annotation-experimental-1.3.0-10 C:\Users\prite\.gradle\caches\8.9\transforms\34dd0e7912deb495b2060650f62d41b2\transformed\jetified-annotation-experimental-1.3.0\res
+com.kali.app-jetified-emoji2-1.2.0-11 C:\Users\prite\.gradle\caches\8.9\transforms\3b825528b10a3ee1b886e5dcaea781bb\transformed\jetified-emoji2-1.2.0\res
+com.kali.app-jetified-activity-1.8.2-12 C:\Users\prite\.gradle\caches\8.9\transforms\3d291fca56e622ce161fbd5accd2698d\transformed\jetified-activity-1.8.2\res
+com.kali.app-jetified-osmdroid-android-6.1.18-13 C:\Users\prite\.gradle\caches\8.9\transforms\3d6de626dce82c2b4d87b111094f23b6\transformed\jetified-osmdroid-android-6.1.18\res
+com.kali.app-work-runtime-2.9.0-14 C:\Users\prite\.gradle\caches\8.9\transforms\43a5f7be4505ab9efe2ebc1acee4ecd9\transformed\work-runtime-2.9.0\res
+com.kali.app-jetified-activity-ktx-1.8.2-15 C:\Users\prite\.gradle\caches\8.9\transforms\448859bd5c622109d243d1605b9567e4\transformed\jetified-activity-ktx-1.8.2\res
+com.kali.app-lifecycle-runtime-2.7.0-16 C:\Users\prite\.gradle\caches\8.9\transforms\52cb5e636773d323e877e54f33172f8f\transformed\lifecycle-runtime-2.7.0\res
+com.kali.app-jetified-lifecycle-viewmodel-ktx-2.7.0-17 C:\Users\prite\.gradle\caches\8.9\transforms\55154fd84f09cd11bd326f72dc430ba0\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
+com.kali.app-jetified-room-ktx-2.6.1-18 C:\Users\prite\.gradle\caches\8.9\transforms\586f5dcb68112607dcb605f8d1babd80\transformed\jetified-room-ktx-2.6.1\res
+com.kali.app-jetified-savedstate-1.2.1-19 C:\Users\prite\.gradle\caches\8.9\transforms\70f4b9cde53cf51215935af54fc0b8c7\transformed\jetified-savedstate-1.2.1\res
+com.kali.app-sqlite-framework-2.4.0-20 C:\Users\prite\.gradle\caches\8.9\transforms\800156fbb008c2a2db3f3a598c09e9ad\transformed\sqlite-framework-2.4.0\res
+com.kali.app-work-runtime-ktx-2.9.0-21 C:\Users\prite\.gradle\caches\8.9\transforms\8563acca35839901b01f006ceabc55bd\transformed\work-runtime-ktx-2.9.0\res
+com.kali.app-coordinatorlayout-1.1.0-22 C:\Users\prite\.gradle\caches\8.9\transforms\8e2fb0267cc616f36036104d37ae7c89\transformed\coordinatorlayout-1.1.0\res
+com.kali.app-transition-1.2.0-23 C:\Users\prite\.gradle\caches\8.9\transforms\8f0917cf9a716344d417e1589c33db7a\transformed\transition-1.2.0\res
+com.kali.app-jetified-core-ktx-1.12.0-24 C:\Users\prite\.gradle\caches\8.9\transforms\8f7217301fd5a47ceb02ed07be11ff1d\transformed\jetified-core-ktx-1.12.0\res
+com.kali.app-appcompat-1.6.1-25 C:\Users\prite\.gradle\caches\8.9\transforms\9468643c62b6b749a4afc36202e4fa51\transformed\appcompat-1.6.1\res
+com.kali.app-core-1.12.0-26 C:\Users\prite\.gradle\caches\8.9\transforms\a45d773e5f654ddff813b320a706cd3d\transformed\core-1.12.0\res
+com.kali.app-jetified-viewpager2-1.0.0-27 C:\Users\prite\.gradle\caches\8.9\transforms\a8bf4910467061337fc8d6077fa2a8b1\transformed\jetified-viewpager2-1.0.0\res
+com.kali.app-jetified-startup-runtime-1.1.1-28 C:\Users\prite\.gradle\caches\8.9\transforms\ad663dcf3be8d707e1a3159fff1083e1\transformed\jetified-startup-runtime-1.1.1\res
+com.kali.app-cardview-1.0.0-29 C:\Users\prite\.gradle\caches\8.9\transforms\ade55a7395317a881f81e31bfd688e58\transformed\cardview-1.0.0\res
+com.kali.app-lifecycle-viewmodel-2.7.0-30 C:\Users\prite\.gradle\caches\8.9\transforms\af75d59ea4b71b84d4d9c9e33e0e04f7\transformed\lifecycle-viewmodel-2.7.0\res
+com.kali.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-31 C:\Users\prite\.gradle\caches\8.9\transforms\aff90c4f6929296885c2ace334b8399b\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.kali.app-jetified-lifecycle-livedata-ktx-2.7.0-32 C:\Users\prite\.gradle\caches\8.9\transforms\b3bf8caad42db0f49dd30594680f9e04\transformed\jetified-lifecycle-livedata-ktx-2.7.0\res
+com.kali.app-sqlite-2.4.0-33 C:\Users\prite\.gradle\caches\8.9\transforms\b737cc7d55a8c525102ab8ba40184a8c\transformed\sqlite-2.4.0\res
+com.kali.app-material-1.11.0-34 C:\Users\prite\.gradle\caches\8.9\transforms\c3d2bd28db63976ff5247ba5e3fd77b8\transformed\material-1.11.0\res
+com.kali.app-jetified-play-services-basement-18.2.0-35 C:\Users\prite\.gradle\caches\8.9\transforms\c6d60a748be77e70065c4e12928cec17\transformed\jetified-play-services-basement-18.2.0\res
+com.kali.app-room-runtime-2.6.1-36 C:\Users\prite\.gradle\caches\8.9\transforms\c7cf4377276480b7f20c7c5f07f29e99\transformed\room-runtime-2.6.1\res
+com.kali.app-fragment-1.3.6-37 C:\Users\prite\.gradle\caches\8.9\transforms\d4747695fdd26719fe7f492faeb36f1b\transformed\fragment-1.3.6\res
+com.kali.app-jetified-savedstate-ktx-1.2.1-38 C:\Users\prite\.gradle\caches\8.9\transforms\dc30278c5526e40b85474e9d9f6ab33f\transformed\jetified-savedstate-ktx-1.2.1\res
+com.kali.app-jetified-lifecycle-process-2.7.0-39 C:\Users\prite\.gradle\caches\8.9\transforms\de17c198bd529c675a585f38c479dd12\transformed\jetified-lifecycle-process-2.7.0\res
+com.kali.app-drawerlayout-1.1.1-40 C:\Users\prite\.gradle\caches\8.9\transforms\e4abe673ab4b17ad674b3eb818b01281\transformed\drawerlayout-1.1.1\res
+com.kali.app-jetified-play-services-base-18.1.0-41 C:\Users\prite\.gradle\caches\8.9\transforms\ea23597982eb62cfc4f052f4905be928\transformed\jetified-play-services-base-18.1.0\res
+com.kali.app-core-runtime-2.2.0-42 C:\Users\prite\.gradle\caches\8.9\transforms\f5e49e371552c63c0a410cc2d348153c\transformed\core-runtime-2.2.0\res
+com.kali.app-jetified-lifecycle-livedata-core-ktx-2.7.0-43 C:\Users\prite\.gradle\caches\8.9\transforms\f7ecc304f5bf7c066f7c17781786549d\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
+com.kali.app-pngs-44 D:\desktop dara\Kali 4.0\Kali-Android\app\build\generated\res\pngs\debug
+com.kali.app-resValues-45 D:\desktop dara\Kali 4.0\Kali-Android\app\build\generated\res\resValues\debug
+com.kali.app-packageDebugResources-46 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.kali.app-packageDebugResources-47 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.kali.app-debug-48 D:\desktop dara\Kali 4.0\Kali-Android\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.kali.app-debug-49 D:\desktop dara\Kali 4.0\Kali-Android\app\src\debug\res
+com.kali.app-main-50 D:\desktop dara\Kali 4.0\Kali-Android\app\src\main\res

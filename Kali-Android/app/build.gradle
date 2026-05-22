@@ -63,6 +63,9 @@ dependencies {
     // Location
     implementation 'com.google.android.gms:play-services-location:21.1.0'
 
+    // Native OpenStreetMap Client
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
+
     // Testing
     testImplementation 'junit:junit:4.13.2'
 }

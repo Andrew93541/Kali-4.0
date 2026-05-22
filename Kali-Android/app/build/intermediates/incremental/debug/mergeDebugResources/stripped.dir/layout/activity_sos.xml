@@ -1,61 +1,639 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="@color/kali_bg"
-    android:padding="32dp">
+    android:background="@color/kali_bg">
 
-    <TextView
-        android:text="KALI"
-        android:textSize="36sp"
-        android:textColor="@color/kali_pink"
-        android:textStyle="bold"
-        android:letterSpacing="0.2"
-        android:layout_marginBottom="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <!-- ── Main Dashboard Content ───────────────────────────────────────── -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <TextView
-        android:text="Women\'s Safety App"
-        android:textSize="14sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="48dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSos"
-        android:text="SOS"
-        android:textSize="28sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:backgroundTint="@color/kali_pink"
-        app:cornerRadius="90dp"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginBottom="32dp"
-        android:elevation="8dp"/>
+            <!-- ── Top Header Row ──────────────────────────────────────────── -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:text="Ready"
-        android:textSize="16sp"
-        android:textColor="@color/kali_text"
-        android:layout_marginBottom="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+                <!-- KALI brand text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="K A L I"
+                    android:textColor="@color/kali_pink"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.25"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCancel"
-        android:text="Cancel SOS"
-        android:enabled="false"
-        app:backgroundTint="@color/kali_surface"
-        android:textColor="#aaaaaa"
-        app:cornerRadius="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+                <!-- Logout button (right) -->
+                <ImageButton
+                    android:id="@+id/btnLogout"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_demo_badge"
+                    android:src="@android:drawable/ic_lock_power_off"
+                    app:tint="@color/white"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="Logout" />
 
-</LinearLayout>
+                <!-- Profile button (second from right) -->
+                <ImageButton
+                    android:id="@+id/btnProfile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_demo_badge"
+                    android:src="@android:drawable/ic_menu_view"
+                    app:tint="@color/kali_pink"
+                    android:layout_toStartOf="@id/btnLogout"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="Profile" />
+
+            </RelativeLayout>
+
+            <!-- ── GPS Status Chip Bar ─────────────────────────────────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_glass"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginBottom="20dp">
+
+                <!-- GPS accuracy dot -->
+                <View
+                    android:id="@+id/viewGpsDot"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_pulsing_marker"
+                    android:backgroundTint="#00F2FE"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Address or coordinate text -->
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Acquiring GPS…"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:ellipsize="end" />
+
+            </LinearLayout>
+
+            <!-- ── SOS Button Area ─────────────────────────────────────────── -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="28dp">
+
+                <!-- Outer glow ring -->
+                <View
+                    android:layout_width="240dp"
+                    android:layout_height="240dp"
+                    android:background="@drawable/bg_pulsing_marker"
+                    android:backgroundTint="#0AFF2D8A"
+                    android:layout_gravity="center" />
+
+                <!-- Mid glow ring -->
+                <View
+                    android:layout_width="205dp"
+                    android:layout_height="205dp"
+                    android:background="@drawable/bg_pulsing_marker"
+                    android:backgroundTint="#14FF2D8A"
+                    android:layout_gravity="center" />
+
+                <!-- Core SOS button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSos"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    android:layout_gravity="center"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_gradient_button"
+                    android:text="SOS"
+                    android:textColor="@color/white"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05"
+                    android:elevation="8dp" />
+
+                <!-- Countdown overlay (shown during 3-2-1) -->
+                <TextView
+                    android:id="@+id/tvCountdown"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="64sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:elevation="10dp"
+                    android:background="#CC000000" />
+
+            </FrameLayout>
+
+            <!-- ── SOS Active State Section (hidden until SOS triggers) ── -->
+            <LinearLayout
+                android:id="@+id/layoutSosActive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_glass"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <!-- Recording indicator row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <View
+                        android:id="@+id/viewRecordDot"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/bg_pulsing_marker"
+                        android:backgroundTint="#FF3B30"
+                        android:layout_marginEnd="10dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Recording Active"
+                        android:textColor="#FF3B30"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Duration timer -->
+                <TextView
+                    android:id="@+id/tvSosDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SOS Active: 00:00"
+                    android:textColor="@color/kali_pink"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+            </LinearLayout>
+
+            <!-- ── System Diagnostics Card ─────────────────────────────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_glass"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TACTICAL DEVICE TERMINAL STATUS"
+                    android:textColor="#59557D"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- SECURE LINK row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="SECURE LINK:"
+                        android:textColor="#88FFFFFF"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ONLINE / READY"
+                        android:textColor="#00F2FE"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- GPS ENGINE row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="GPS ENGINE:"
+                        android:textColor="#88FFFFFF"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KALMAN FILTER ENABLED"
+                        android:textColor="@color/kali_pink"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- TELEMETRY SYNC row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TELEMETRY SYNC:"
+                        android:textColor="#88FFFFFF"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ACTIVE BATCH SYNC"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ── Fake Call Secure Card ───────────────────────────────────── -->
+            <LinearLayout
+                android:id="@+id/cardFakeCall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_glass"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SECURE ESCAPE UTILITIES"
+                    android:textColor="#59557D"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Simulate a realistic incoming call to safely excuse yourself from uncomfortable or threatening environments."
+                    android:textColor="#88FFFFFF"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="16dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFakeCall"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="TRIGGER SIMULATED CALL"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    app:backgroundTint="#0C0A15"
+                    app:strokeColor="#FF2D8A"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+
+            </LinearLayout>
+
+            <!-- ── Ambient Noise Shield Card (Hands-Free Scream Guard) ───── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_glass"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HANDS-FREE ALARM SHIELD"
+                    android:textColor="#59557D"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="14dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ambient Noise Shield (Scream Guard)"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/switchScreamGuard" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchScreamGuard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        app:useMaterialThemeColors="true" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Listens continuously in the background for sudden high-decibel distress signals or screams (above 85 dB). Fires automatic SOS countdown for hands-free rescue."
+                    android:textColor="#88FFFFFF"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- ── Emergency Contacts Quick-Dial Card ─────────────────────── -->
+            <LinearLayout
+                android:id="@+id/layoutContacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_glass"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EMERGENCY CONTACTS"
+                    android:textColor="#59557D"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Container populated programmatically -->
+                <LinearLayout
+                    android:id="@+id/llContactsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+            <!-- ── Cancel SOS Button ───────────────────────────────────────── -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:enabled="false"
+                app:backgroundTint="#0C0A15"
+                android:textColor="#59557D"
+                app:strokeColor="#211E3B"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="12dp"
+                android:text="STAND DOWN (CANCEL SOS)"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Authorized Secure Terminal Access"
+                android:textColor="#3D3D60"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── Simulated Incoming Call Overlay (Full Screen) ────────────────── -->
+    <RelativeLayout
+        android:id="@+id/layoutFakeCallOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0F0F1A"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp">
+
+        <!-- Top Spacing -->
+        <LinearLayout
+            android:id="@+id/llCallerHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="80dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Incoming Call"
+                android:textColor="#88FFFFFF"
+                android:textSize="14sp"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/tvCallerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MOM"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/tvCallerNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mobile +91 98765 43210"
+                android:textColor="#59557D"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <!-- Ongoing call state HUD (hidden initially) -->
+        <LinearLayout
+            android:id="@+id/llActiveCallHud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvCallTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="#00F2FE"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Secure Audio Connection Active"
+                android:textColor="#59557D"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <!-- Call Actions Row (Answer / Decline) -->
+        <LinearLayout
+            android:id="@+id/llCallActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="80dp">
+
+            <!-- Decline Action -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginEnd="40dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDeclineCall"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                    app:iconTint="@color/white"
+                    app:iconSize="28dp"
+                    app:backgroundTint="@color/kali_red"
+                    app:cornerRadius="36dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Decline"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="12sp"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+            <!-- Answer Action -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="40dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAnswerCall"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    app:icon="@android:drawable/ic_menu_call"
+                    app:iconTint="@color/white"
+                    app:iconSize="28dp"
+                    app:backgroundTint="@color/kali_green"
+                    app:cornerRadius="36dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Answer"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="12sp"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- End Call Action (only shown when call is active) -->
+        <LinearLayout
+            android:id="@+id/llEndCall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="80dp"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEndCall"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                app:iconTint="@color/white"
+                app:iconSize="28dp"
+                app:backgroundTint="@color/kali_red"
+                app:cornerRadius="36dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Call"
+                android:textColor="#88FFFFFF"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

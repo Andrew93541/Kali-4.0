@@ -3,10 +3,12 @@ package com.kali.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.kali.R
 import com.kali.databinding.ActivityRegisterBinding
 import com.kali.network.RegisterRequest
 import com.kali.network.RetrofitClient
@@ -15,18 +17,14 @@ import kotlinx.coroutines.launch
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
+    private var selectedRole: String = "User"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up the Role dropdown selection
-        val roles = arrayOf("User", "Guardian", "Police")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, roles)
-        binding.actvRole.setAdapter(adapter)
-        // Default select the first item
-        binding.actvRole.setText(roles[0], false)
+        setupRoleChips()
 
         binding.btnRegister.setOnClickListener {
             validateAndRegister()
@@ -37,12 +35,47 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // ─── Role chip selection ──────────────────────────────────────────────────
+
+    private fun setupRoleChips() {
+        selectRoleChip("User")
+
+        binding.chipUser.setOnClickListener { selectRoleChip("User") }
+        binding.chipGuardian.setOnClickListener { selectRoleChip("Guardian") }
+        binding.chipPolice.setOnClickListener { selectRoleChip("Police") }
+    }
+
+    private fun selectRoleChip(role: String) {
+        selectedRole = role
+        binding.tvSelectedRole.text = "Role: $role"
+
+        val activeColor = ContextCompat.getColor(this, R.color.kali_pink)
+        val inactiveColor = 0x1E1A33.or(-0x1000000) // #FF1E1A33 — same as app:backgroundTint in XML
+
+        val chips = listOf(
+            binding.chipUser to "User",
+            binding.chipGuardian to "Guardian",
+            binding.chipPolice to "Police"
+        )
+
+        chips.forEach { (chip, chipRole) ->
+            if (chipRole == role) {
+                chip.setBackgroundColor(activeColor)
+                chip.setTextColor(ContextCompat.getColor(this, R.color.white))
+            } else {
+                chip.setBackgroundColor(inactiveColor)
+                chip.setTextColor(0x88FFFFFF.toInt())
+            }
+        }
+    }
+
+    // ─── Validation ───────────────────────────────────────────────────────────
+
     private fun validateAndRegister() {
         val name = binding.etName.text.toString().trim()
         val phone = binding.etPhone.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString()
-        val role = binding.actvRole.text.toString()
 
         if (name.isEmpty()) {
             binding.etName.error = "Name is required"
@@ -51,6 +84,11 @@ class RegisterActivity : AppCompatActivity() {
         }
         if (phone.isEmpty()) {
             binding.etPhone.error = "Phone number is required"
+            binding.etPhone.requestFocus()
+            return
+        }
+        if (phone.length < 7) {
+            binding.etPhone.error = "Enter a valid phone number"
             binding.etPhone.requestFocus()
             return
         }
@@ -69,15 +107,13 @@ class RegisterActivity : AppCompatActivity() {
             binding.etPassword.requestFocus()
             return
         }
-        if (role.isEmpty()) {
-            binding.actvRole.error = "Please select a role"
-            return
-        }
 
         lifecycleScope.launch {
-            registerUser(RegisterRequest(name, phone, email, password, role))
+            registerUser(RegisterRequest(name, phone, email, password, selectedRole))
         }
     }
+
+    // ─── Network call ─────────────────────────────────────────────────────────
 
     private suspend fun registerUser(request: RegisterRequest) {
         binding.btnRegister.isEnabled = false
@@ -88,24 +124,36 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         binding.btnRegister.isEnabled = true
-        binding.btnRegister.text = "Sign Up"
+        binding.btnRegister.text = "CREATE ACCOUNT"
 
         val response = result.getOrNull()
         if (response != null) {
             if (response.isSuccessful) {
-                Toast.makeText(this, "Registration Successful! Please Sign In.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Account created! Please sign in.",
+                    Toast.LENGTH_LONG
+                ).show()
                 navigateToLogin()
             } else {
                 val errorMsg = when (response.code()) {
                     409 -> "Email is already registered"
-                    else -> "Registration failed. Please try again."
+                    400 -> "Invalid registration details"
+                    else -> "Registration failed (${response.code()}). Try again."
                 }
                 Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "Network connection error. Check your server.", Toast.LENGTH_LONG).show()
+            val throwable = result.exceptionOrNull()
+            Toast.makeText(
+                this,
+                "Network error: ${throwable?.message ?: "Check your server connection"}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
+
+    // ─── Navigation ───────────────────────────────────────────────────────────
 
     private fun navigateToLogin() {
         val intent = Intent(this, LoginActivity::class.java)

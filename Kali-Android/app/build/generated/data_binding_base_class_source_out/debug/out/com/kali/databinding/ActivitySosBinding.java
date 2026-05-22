@@ -4,13 +4,17 @@ package com.kali.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.kali.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -18,28 +22,136 @@ import java.lang.String;
 
 public final class ActivitySosBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final FrameLayout rootView;
+
+  @NonNull
+  public final MaterialButton btnAnswerCall;
 
   @NonNull
   public final MaterialButton btnCancel;
 
   @NonNull
+  public final MaterialButton btnDeclineCall;
+
+  @NonNull
+  public final MaterialButton btnEndCall;
+
+  @NonNull
+  public final MaterialButton btnFakeCall;
+
+  @NonNull
+  public final ImageButton btnLogout;
+
+  @NonNull
+  public final ImageButton btnProfile;
+
+  @NonNull
   public final MaterialButton btnSos;
+
+  @NonNull
+  public final LinearLayout cardFakeCall;
+
+  @NonNull
+  public final LinearLayout layoutContacts;
+
+  @NonNull
+  public final RelativeLayout layoutFakeCallOverlay;
+
+  @NonNull
+  public final LinearLayout layoutSosActive;
+
+  @NonNull
+  public final LinearLayout llActiveCallHud;
+
+  @NonNull
+  public final LinearLayout llCallActions;
+
+  @NonNull
+  public final LinearLayout llCallerHeader;
+
+  @NonNull
+  public final LinearLayout llContactsContainer;
+
+  @NonNull
+  public final LinearLayout llEndCall;
+
+  @NonNull
+  public final SwitchMaterial switchScreamGuard;
+
+  @NonNull
+  public final TextView tvAddress;
+
+  @NonNull
+  public final TextView tvCallTimer;
+
+  @NonNull
+  public final TextView tvCallerName;
+
+  @NonNull
+  public final TextView tvCallerNumber;
+
+  @NonNull
+  public final TextView tvCountdown;
+
+  @NonNull
+  public final TextView tvSosDuration;
 
   @NonNull
   public final TextView tvStatus;
 
-  private ActivitySosBinding(@NonNull LinearLayout rootView, @NonNull MaterialButton btnCancel,
-      @NonNull MaterialButton btnSos, @NonNull TextView tvStatus) {
+  @NonNull
+  public final View viewGpsDot;
+
+  @NonNull
+  public final View viewRecordDot;
+
+  private ActivitySosBinding(@NonNull FrameLayout rootView, @NonNull MaterialButton btnAnswerCall,
+      @NonNull MaterialButton btnCancel, @NonNull MaterialButton btnDeclineCall,
+      @NonNull MaterialButton btnEndCall, @NonNull MaterialButton btnFakeCall,
+      @NonNull ImageButton btnLogout, @NonNull ImageButton btnProfile,
+      @NonNull MaterialButton btnSos, @NonNull LinearLayout cardFakeCall,
+      @NonNull LinearLayout layoutContacts, @NonNull RelativeLayout layoutFakeCallOverlay,
+      @NonNull LinearLayout layoutSosActive, @NonNull LinearLayout llActiveCallHud,
+      @NonNull LinearLayout llCallActions, @NonNull LinearLayout llCallerHeader,
+      @NonNull LinearLayout llContactsContainer, @NonNull LinearLayout llEndCall,
+      @NonNull SwitchMaterial switchScreamGuard, @NonNull TextView tvAddress,
+      @NonNull TextView tvCallTimer, @NonNull TextView tvCallerName,
+      @NonNull TextView tvCallerNumber, @NonNull TextView tvCountdown,
+      @NonNull TextView tvSosDuration, @NonNull TextView tvStatus, @NonNull View viewGpsDot,
+      @NonNull View viewRecordDot) {
     this.rootView = rootView;
+    this.btnAnswerCall = btnAnswerCall;
     this.btnCancel = btnCancel;
+    this.btnDeclineCall = btnDeclineCall;
+    this.btnEndCall = btnEndCall;
+    this.btnFakeCall = btnFakeCall;
+    this.btnLogout = btnLogout;
+    this.btnProfile = btnProfile;
     this.btnSos = btnSos;
+    this.cardFakeCall = cardFakeCall;
+    this.layoutContacts = layoutContacts;
+    this.layoutFakeCallOverlay = layoutFakeCallOverlay;
+    this.layoutSosActive = layoutSosActive;
+    this.llActiveCallHud = llActiveCallHud;
+    this.llCallActions = llCallActions;
+    this.llCallerHeader = llCallerHeader;
+    this.llContactsContainer = llContactsContainer;
+    this.llEndCall = llEndCall;
+    this.switchScreamGuard = switchScreamGuard;
+    this.tvAddress = tvAddress;
+    this.tvCallTimer = tvCallTimer;
+    this.tvCallerName = tvCallerName;
+    this.tvCallerNumber = tvCallerNumber;
+    this.tvCountdown = tvCountdown;
+    this.tvSosDuration = tvSosDuration;
     this.tvStatus = tvStatus;
+    this.viewGpsDot = viewGpsDot;
+    this.viewRecordDot = viewRecordDot;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public FrameLayout getRoot() {
     return rootView;
   }
 
@@ -64,9 +176,45 @@ public final class ActivitySosBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnAnswerCall;
+      MaterialButton btnAnswerCall = ViewBindings.findChildViewById(rootView, id);
+      if (btnAnswerCall == null) {
+        break missingId;
+      }
+
       id = R.id.btnCancel;
       MaterialButton btnCancel = ViewBindings.findChildViewById(rootView, id);
       if (btnCancel == null) {
+        break missingId;
+      }
+
+      id = R.id.btnDeclineCall;
+      MaterialButton btnDeclineCall = ViewBindings.findChildViewById(rootView, id);
+      if (btnDeclineCall == null) {
+        break missingId;
+      }
+
+      id = R.id.btnEndCall;
+      MaterialButton btnEndCall = ViewBindings.findChildViewById(rootView, id);
+      if (btnEndCall == null) {
+        break missingId;
+      }
+
+      id = R.id.btnFakeCall;
+      MaterialButton btnFakeCall = ViewBindings.findChildViewById(rootView, id);
+      if (btnFakeCall == null) {
+        break missingId;
+      }
+
+      id = R.id.btnLogout;
+      ImageButton btnLogout = ViewBindings.findChildViewById(rootView, id);
+      if (btnLogout == null) {
+        break missingId;
+      }
+
+      id = R.id.btnProfile;
+      ImageButton btnProfile = ViewBindings.findChildViewById(rootView, id);
+      if (btnProfile == null) {
         break missingId;
       }
 
@@ -76,13 +224,126 @@ public final class ActivitySosBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.cardFakeCall;
+      LinearLayout cardFakeCall = ViewBindings.findChildViewById(rootView, id);
+      if (cardFakeCall == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutContacts;
+      LinearLayout layoutContacts = ViewBindings.findChildViewById(rootView, id);
+      if (layoutContacts == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutFakeCallOverlay;
+      RelativeLayout layoutFakeCallOverlay = ViewBindings.findChildViewById(rootView, id);
+      if (layoutFakeCallOverlay == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutSosActive;
+      LinearLayout layoutSosActive = ViewBindings.findChildViewById(rootView, id);
+      if (layoutSosActive == null) {
+        break missingId;
+      }
+
+      id = R.id.llActiveCallHud;
+      LinearLayout llActiveCallHud = ViewBindings.findChildViewById(rootView, id);
+      if (llActiveCallHud == null) {
+        break missingId;
+      }
+
+      id = R.id.llCallActions;
+      LinearLayout llCallActions = ViewBindings.findChildViewById(rootView, id);
+      if (llCallActions == null) {
+        break missingId;
+      }
+
+      id = R.id.llCallerHeader;
+      LinearLayout llCallerHeader = ViewBindings.findChildViewById(rootView, id);
+      if (llCallerHeader == null) {
+        break missingId;
+      }
+
+      id = R.id.llContactsContainer;
+      LinearLayout llContactsContainer = ViewBindings.findChildViewById(rootView, id);
+      if (llContactsContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.llEndCall;
+      LinearLayout llEndCall = ViewBindings.findChildViewById(rootView, id);
+      if (llEndCall == null) {
+        break missingId;
+      }
+
+      id = R.id.switchScreamGuard;
+      SwitchMaterial switchScreamGuard = ViewBindings.findChildViewById(rootView, id);
+      if (switchScreamGuard == null) {
+        break missingId;
+      }
+
+      id = R.id.tvAddress;
+      TextView tvAddress = ViewBindings.findChildViewById(rootView, id);
+      if (tvAddress == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCallTimer;
+      TextView tvCallTimer = ViewBindings.findChildViewById(rootView, id);
+      if (tvCallTimer == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCallerName;
+      TextView tvCallerName = ViewBindings.findChildViewById(rootView, id);
+      if (tvCallerName == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCallerNumber;
+      TextView tvCallerNumber = ViewBindings.findChildViewById(rootView, id);
+      if (tvCallerNumber == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCountdown;
+      TextView tvCountdown = ViewBindings.findChildViewById(rootView, id);
+      if (tvCountdown == null) {
+        break missingId;
+      }
+
+      id = R.id.tvSosDuration;
+      TextView tvSosDuration = ViewBindings.findChildViewById(rootView, id);
+      if (tvSosDuration == null) {
+        break missingId;
+      }
+
       id = R.id.tvStatus;
       TextView tvStatus = ViewBindings.findChildViewById(rootView, id);
       if (tvStatus == null) {
         break missingId;
       }
 
-      return new ActivitySosBinding((LinearLayout) rootView, btnCancel, btnSos, tvStatus);
+      id = R.id.viewGpsDot;
+      View viewGpsDot = ViewBindings.findChildViewById(rootView, id);
+      if (viewGpsDot == null) {
+        break missingId;
+      }
+
+      id = R.id.viewRecordDot;
+      View viewRecordDot = ViewBindings.findChildViewById(rootView, id);
+      if (viewRecordDot == null) {
+        break missingId;
+      }
+
+      return new ActivitySosBinding((FrameLayout) rootView, btnAnswerCall, btnCancel,
+          btnDeclineCall, btnEndCall, btnFakeCall, btnLogout, btnProfile, btnSos, cardFakeCall,
+          layoutContacts, layoutFakeCallOverlay, layoutSosActive, llActiveCallHud, llCallActions,
+          llCallerHeader, llContactsContainer, llEndCall, switchScreamGuard, tvAddress, tvCallTimer,
+          tvCallerName, tvCallerNumber, tvCountdown, tvSosDuration, tvStatus, viewGpsDot,
+          viewRecordDot);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

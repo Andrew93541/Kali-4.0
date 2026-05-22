@@ -1,50 +1,78 @@
 [
     {
-        "merged": "com.kali.app-debug-47:/drawable_ic_launcher_round.xml.flat",
-        "source": "com.kali.app-main-49:/drawable/ic_launcher_round.xml"
+        "merged": "com.kali.app-debug-48:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.kali.app-main-50:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.kali.app-main-49:/drawable/ic_launcher_foreground.xml"
+        "merged": "com.kali.app-debug-48:/layout_activity_login.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_login.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_activity_tracking.xml.flat",
-        "source": "com.kali.app-main-49:/layout/activity_tracking.xml"
+        "merged": "com.kali.app-debug-48:/layout_dialog_google_picker.xml.flat",
+        "source": "com.kali.app-main-50:/layout/dialog_google_picker.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_dialog_google_picker.xml.flat",
-        "source": "com.kali.app-main-49:/layout/dialog_google_picker.xml"
+        "merged": "com.kali.app-debug-48:/drawable_ic_launcher_round.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/ic_launcher_round.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.kali.app-main-49:/drawable/ic_launcher_background.xml"
+        "merged": "com.kali.app-debug-48:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_item_google_account.xml.flat",
-        "source": "com.kali.app-main-49:/layout/item_google_account.xml"
+        "merged": "com.kali.app-debug-48:/drawable_ic_google.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/ic_google.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_activity_sos.xml.flat",
-        "source": "com.kali.app-main-49:/layout/activity_sos.xml"
+        "merged": "com.kali.app-debug-48:/drawable_bg_card_glass.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/bg_card_glass.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_activity_login.xml.flat",
-        "source": "com.kali.app-main-49:/layout/activity_login.xml"
+        "merged": "com.kali.app-debug-48:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/drawable_ic_google.xml.flat",
-        "source": "com.kali.app-main-49:/drawable/ic_google.xml"
+        "merged": "com.kali.app-debug-48:/layout_item_google_account.xml.flat",
+        "source": "com.kali.app-main-50:/layout/item_google_account.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.kali.app-main-49:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.kali.app-debug-48:/drawable_bg_gradient_button.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/bg_gradient_button.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_dialog_custom_google_input.xml.flat",
-        "source": "com.kali.app-main-49:/layout/dialog_custom_google_input.xml"
+        "merged": "com.kali.app-debug-48:/layout_activity_tracking.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_tracking.xml"
     },
     {
-        "merged": "com.kali.app-debug-47:/layout_activity_register.xml.flat",
-        "source": "com.kali.app-main-49:/layout/activity_register.xml"
+        "merged": "com.kali.app-debug-48:/drawable_bg_demo_badge.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/bg_demo_badge.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/layout_activity_register.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/drawable_bg_input_field.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/bg_input_field.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/layout_activity_profile.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_profile.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/layout_dialog_custom_google_input.xml.flat",
+        "source": "com.kali.app-main-50:/layout/dialog_custom_google_input.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/layout_activity_decoy.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_decoy.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/drawable_bg_pulsing_marker.xml.flat",
+        "source": "com.kali.app-main-50:/drawable/bg_pulsing_marker.xml"
+    },
+    {
+        "merged": "com.kali.app-debug-48:/layout_activity_sos.xml.flat",
+        "source": "com.kali.app-main-50:/layout/activity_sos.xml"
     }
 ]

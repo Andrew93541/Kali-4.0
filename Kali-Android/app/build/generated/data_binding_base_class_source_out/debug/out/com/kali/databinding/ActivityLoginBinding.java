@@ -4,14 +4,16 @@ package com.kali.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.kali.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -19,7 +21,7 @@ import java.lang.String;
 
 public final class ActivityLoginBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ScrollView rootView;
 
   @NonNull
   public final MaterialButton btnDemoGuardian;
@@ -34,28 +36,32 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final MaterialButton btnGoogleSignIn;
 
   @NonNull
-  public final MaterialButton btnLogin;
+  public final Button btnLogin;
 
   @NonNull
-  public final TextInputEditText etEmail;
+  public final ImageButton btnServerSettings;
 
   @NonNull
-  public final TextInputEditText etPassword;
+  public final EditText etEmail;
+
+  @NonNull
+  public final EditText etPassword;
 
   @NonNull
   public final TextView tvSignUpLink;
 
-  private ActivityLoginBinding(@NonNull LinearLayout rootView,
+  private ActivityLoginBinding(@NonNull ScrollView rootView,
       @NonNull MaterialButton btnDemoGuardian, @NonNull MaterialButton btnDemoPolice,
       @NonNull MaterialButton btnDemoUser, @NonNull MaterialButton btnGoogleSignIn,
-      @NonNull MaterialButton btnLogin, @NonNull TextInputEditText etEmail,
-      @NonNull TextInputEditText etPassword, @NonNull TextView tvSignUpLink) {
+      @NonNull Button btnLogin, @NonNull ImageButton btnServerSettings, @NonNull EditText etEmail,
+      @NonNull EditText etPassword, @NonNull TextView tvSignUpLink) {
     this.rootView = rootView;
     this.btnDemoGuardian = btnDemoGuardian;
     this.btnDemoPolice = btnDemoPolice;
     this.btnDemoUser = btnDemoUser;
     this.btnGoogleSignIn = btnGoogleSignIn;
     this.btnLogin = btnLogin;
+    this.btnServerSettings = btnServerSettings;
     this.etEmail = etEmail;
     this.etPassword = etPassword;
     this.tvSignUpLink = tvSignUpLink;
@@ -63,7 +69,7 @@ public final class ActivityLoginBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ScrollView getRoot() {
     return rootView;
   }
 
@@ -113,19 +119,25 @@ public final class ActivityLoginBinding implements ViewBinding {
       }
 
       id = R.id.btnLogin;
-      MaterialButton btnLogin = ViewBindings.findChildViewById(rootView, id);
+      Button btnLogin = ViewBindings.findChildViewById(rootView, id);
       if (btnLogin == null) {
         break missingId;
       }
 
+      id = R.id.btnServerSettings;
+      ImageButton btnServerSettings = ViewBindings.findChildViewById(rootView, id);
+      if (btnServerSettings == null) {
+        break missingId;
+      }
+
       id = R.id.etEmail;
-      TextInputEditText etEmail = ViewBindings.findChildViewById(rootView, id);
+      EditText etEmail = ViewBindings.findChildViewById(rootView, id);
       if (etEmail == null) {
         break missingId;
       }
 
       id = R.id.etPassword;
-      TextInputEditText etPassword = ViewBindings.findChildViewById(rootView, id);
+      EditText etPassword = ViewBindings.findChildViewById(rootView, id);
       if (etPassword == null) {
         break missingId;
       }
@@ -136,8 +148,9 @@ public final class ActivityLoginBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityLoginBinding((LinearLayout) rootView, btnDemoGuardian, btnDemoPolice,
-          btnDemoUser, btnGoogleSignIn, btnLogin, etEmail, etPassword, tvSignUpLink);
+      return new ActivityLoginBinding((ScrollView) rootView, btnDemoGuardian, btnDemoPolice,
+          btnDemoUser, btnGoogleSignIn, btnLogin, btnServerSettings, etEmail, etPassword,
+          tvSignUpLink);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

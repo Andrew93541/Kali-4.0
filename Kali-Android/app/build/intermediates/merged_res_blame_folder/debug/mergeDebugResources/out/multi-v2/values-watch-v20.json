@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.kali.app-mergeDebugResources-45:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.kali.app-mergeDebugResources-46:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\prite\\.gradle\\caches\\transforms-3\\8b30cdb2e3a60cc078194aeeedae23d8\\transformed\\jetified-play-services-auth-20.7.0\\res\\values-watch-v20\\values.xml",
+                    "source": "C:\\Users\\prite\\.gradle\\caches\\8.9\\transforms\\2fa1a19d8043e3fd40a5990acbe045da\\transformed\\jetified-play-services-auth-20.7.0\\res\\values-watch-v20\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11",
                         "startColumns": "0,0,0,0,0,0,0,0",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\prite\\.gradle\\caches\\transforms-3\\ec5621c246d34e90b4800280c4ceea5f\\transformed\\appcompat-1.6.1\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "source": "C:\\Users\\prite\\.gradle\\caches\\8.9\\transforms\\9468643c62b6b749a4afc36202e4fa51\\transformed\\appcompat-1.6.1\\res\\values-watch-v20\\values-watch-v20.xml",
                     "from": {
                         "startLines": "2,5,8",
                         "startColumns": "4,4,4",

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KALI — User Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── Layout grid ──────────────────────────────────────── */
+    .dashboard-container {
+      max-width: 1300px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 968px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* ── Cards & Glassmorphism ────────────────────────────── */
+    .glass-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      box-shadow: var(--glass-shadow);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    
+    /* ── SOS Card Styles ─────────────────────────────────── */
+    .sos-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      min-height: 380px;
+      text-align: center;
+    }
+    
+    .sos-outer {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .sos-button {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-pink), #e01a74);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 30px var(--accent-pink-glow);
+      z-index: 10;
+      position: relative;
+    }
+    
+    .sos-button:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #ff4097, var(--accent-pink));
+      box-shadow: 0 0 45px rgba(255, 45, 138, 0.6);
+    }
+    
+    .sos-button:active {
+      transform: scale(0.97);
+    }
+    
+    .sos-button span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+    
+    /* Pulses when SOS is ACTIVE */
+    .sos-outer.active::before {
+      content: '';
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: var(--accent-pink);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: sosPulseRing 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+      z-index: 1;
+    }
+    
+    .sos-outer.active::after {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      background: var(--accent-pink);
+      border-radius: 50%;
+      opacity: 0.15;
+      animation: sosPulseRing 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite 0.6s;
+      z-index: 0;
+    }
+    
+    @keyframes sosPulseRing {
+      0% { transform: scale(0.7); opacity: 0.6; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+    
+    .sos-status-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .sos-status-badge.inactive {
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid var(--color-success);
+      color: var(--color-success);
+    }
+    
+    .sos-status-badge.active {
+      background: rgba(255, 45, 138, 0.15);
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+      animation: alertFlash 1.5s infinite;
+    }
+    
+    @keyframes alertFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    /* ── Countdown Overlay ────────────────────────────────── */
+    .countdown-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 9, 14, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .countdown-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .countdown-number {
+      font-family: var(--font-display);
+      font-size: 6.5rem;
+      font-weight: 900;
+      color: var(--accent-pink);
+      text-shadow: 0 0 30px var(--accent-pink-glow);
+      animation: numberScale 1s ease-in-out infinite;
+    }
+    
+    @keyframes numberScale {
+      0% { transform: scale(0.6); opacity: 0.4; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.8); opacity: 0.6; }
+    }
+    
+    .countdown-cancel-btn {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .countdown-cancel-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* ── Timer HUD ───────────────────────────────────────── */
+    .timer-hud {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .timer-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent-pink);
+      border-radius: 50%;
+      animation: pulse-dot 1s infinite alternate;
+    }
+    
+    /* ── Emergency Contacts ───────────────────────────────── */
+    .contacts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .contact-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .contact-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .contact-info h5 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .contact-info p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+    
+    .badge.primary {
+      background: rgba(255, 45, 138, 0.15);
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+    }
+    
+    .badge.relation {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    
+    .delete-btn {
+      background: rgba(255, 74, 74, 0.1);
+      border: 1px solid var(--color-danger);
+      color: var(--color-danger);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .delete-btn:hover {
+      background: var(--color-danger);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255, 74, 74, 0.4);
+    }
+    
+    /* ── Forms and Inputs ─────────────────────────────────── */
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    .form-control {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 8px var(--accent-blue-glow);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(135deg, var(--accent-blue), #00b8d4);
+      color: #09090e;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    
+    .submit-btn:hover {
+      box-shadow: 0 0 15px var(--accent-blue-glow);
+      transform: translateY(-1px);
+    }
+    
+    /* ── Profile Section ──────────────────────────────────── */
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+    }
+    
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 10px;
+    }
+    
+    .profile-row:last-child {
+      border: none;
+      padding-bottom: 0;
+    }
+    
+    .profile-label {
+      color: var(--text-secondary);
+    }
+    
+    .profile-value {
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    /* ── Action Buttons ───────────────────────────────────── */
+    .cancel-btn {
+      background: transparent;
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+      max-width: 250px;
+    }
+    
+    .cancel-btn:hover {
+      background: var(--accent-pink);
+      color: #fff;
+      box-shadow: 0 0 15px var(--accent-pink-glow);
+    }
+    
+    .nav-badge {
+      background: rgba(255, 45, 138, 0.12);
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">KALI</div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <span class="user-info" id="navUserInfo">Loading...</span>
+      <button onclick="logout()">LOGOUT</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="main-grid">
+      
+      <!-- Left Column: SOS status -->
+      <div>
+        <div class="glass-card" style="padding: 0; min-height: 480px; display: flex; align-items: center; justify-content: center;">
+          <!-- Countdown Overlay -->
+          <div class="countdown-overlay" id="countdownOverlay">
+            <div class="countdown-number" id="countdownNumber">3</div>
+            <div style="color: var(--text-secondary); margin-top: 10px; font-weight: 500;">PREPARING SOS EMERGENCIES...</div>
+            <button class="countdown-cancel-btn" onclick="cancelCountdown()">CANCEL SOS</button>
+          </div>
+          
+          <div class="sos-panel" id="sosPanel">
+            <div class="sos-status-badge inactive" id="sosBadge">
+              🛡️ SYSTEM SECURE & INACTIVE
+            </div>
+            
+            <div class="sos-outer" id="sosOuter">
+              <button class="sos-button" id="sosBtn" onclick="triggerSOSFlow()">
+                SOS
+                <span>ACTIVATE ALERT</span>
+              </button>
+            </div>
+            
+            <div id="sosActiveHUD" style="display: none; flex-direction: column; align-items: center;">
+              <div class="timer-hud">
+                <span class="timer-dot"></span>
+                <span id="sosDurationTimer">00:00</span>
+              </div>
+              <p style="color: var(--accent-pink); font-size: 0.8rem; margin-top: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
+                STREAMING AUDIO & TELEMETRY
+              </p>
+              <button class="cancel-btn" onclick="deactivateSOS()">DEACTIVATE SOS</button>
+            </div>
+            
+            <p id="sosHelpText" style="color: var(--text-secondary); font-size: 0.82rem; margin-top: 20px; max-width: 320px; line-height: 1.4;">
+              Press the SOS button. A 3-second countdown will start, then emergency dispatchers and guardians will receive your live location.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Emergency Contacts Card -->
+        <div class="glass-card">
+          <div class="card-title">
+            <span>🛡️ EMERGENCY CONTACTS</span>
+          </div>
+          <div class="contacts-list" id="contactsList">
+            <!-- Dynamically populated -->
+          </div>
+          
+          <!-- Add Contact Inline Form -->
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <h4 style="font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 16px; color: #fff;">ADD EMERGENCY CONTACT</h4>
+            <form id="addContactForm" onsubmit="handleAddContact(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="cName">Name</label>
+                  <input type="text" id="cName" class="form-control" placeholder="e.g. Raj Sharma" required />
+                </div>
+                <div class="form-group">
+                  <label for="cPhone">Phone Number</label>
+                  <input type="tel" id="cPhone" class="form-control" placeholder="e.g. +919876543211" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="cRelation">Relationship</label>
+                  <input type="text" id="cRelation" class="form-control" placeholder="e.g. Husband" />
+                </div>
+                <div class="form-group" style="justify-content: center; align-items: flex-start; padding-top: 18px;">
+                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="cPrimary" style="accent-color: var(--accent-pink);" />
+                    <span>Set as Primary Contact</span>
+                  </label>
+                </div>
+              </div>
+              <button type="submit" class="submit-btn">ADD CONTACT</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column: User Profile & Setup -->
+      <div>
+        <div class="glass-card">
+          <div class="card-title">
+            <span>👤 MY PROFILE</span>
+          </div>
+          
+          <div class="profile-info">
+            <div class="profile-row">
+              <span class="profile-label">Full Name</span>
+              <span class="profile-value" id="profileName">Loading...</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Email Address</span>
+              <span class="profile-value" id="profileEmail">Loading...</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Phone Number</span>
+              <span class="profile-value" id="profilePhone">Loading...</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Account Role</span>
+              <span class="profile-value" id="profileRole">Loading...</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Guardian ID</span>
+              <span class="profile-value" id="profileGuardian">Loading...</span>
+            </div>
+          </div>
+          
+          <!-- Update Profile Info Form -->
+          <h4 style="font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 16px; color: #fff;">UPDATE INFORMATION</h4>
+          <form id="updateProfileForm" onsubmit="handleUpdateProfile(event)">
+            <div class="form-group">
+              <label for="uName">Display Name</label>
+              <input type="text" id="uName" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label for="uPhone">Phone Number</label>
+              <input type="tel" id="uPhone" class="form-control" required />
+            </div>
+            <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, var(--accent-pink), #e01a74); color: #fff;">
+              UPDATE PROFILE
+            </button>
+          </form>
+        </div>
+        
+        <!-- Guardian Protection Information -->
+        <div class="glass-card">
+          <div class="card-title">
+            <span>🛡️ GUARDIAN LINK</span>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); padding: 20px; border-radius: var(--radius-md); font-size: 0.88rem; line-height: 1.5; color: var(--text-secondary);">
+            <p style="margin-bottom: 12px; color: #fff; font-weight: 600;">How Family Protection Works:</p>
+            <p style="margin-bottom: 8px;">To enable Swiggy-style real-time tracking, ask your Guardian to log into their dashboard using a Guardian account.</p>
+            <p style="margin-bottom: 8px;">They should search for your registered phone number (<span id="guardianFlowPhone" style="color: var(--accent-pink); font-weight: bold;"></span>) or email address in their panel to initiate a protective link.</p>
+            <p>Once linked, their Family Safety Dashboard will automatically receive location updates, bearing directions, EKF predictions, and audio evidence stream in real-time when your SOS is activated.</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    // ── Auth enforcement ─────────────────────────────────────
+    if (!requireAuth('User')) {
+      // Will redirect
+    }
+
+    let currentActiveAlertId = null;
+    let timerInterval = null;
+    let countdownInterval = null;
+    let countdownTime = 3;
+    let alertStartTime = null;
+
+    // ── On Document Load ─────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProfileData();
+      loadContactsData();
+      checkActiveAlert();
+    });
+
+    // ── Fetch user profile ────────────────────────────────────
+    async function loadProfileData() {
+      const profile = await getProfile();
+      if (!profile || profile.error) {
+        console.error('Error fetching profile:', profile?.error);
+        return;
+      }
+
+      document.getElementById('navUserInfo').innerHTML = `${profile.name} <span class="nav-badge">USER</span>`;
+      document.getElementById('profileName').textContent = profile.name;
+      document.getElementById('profileEmail').textContent = profile.email;
+      document.getElementById('profilePhone').textContent = profile.phone || 'Not provided';
+      document.getElementById('profileRole').textContent = profile.role;
+      document.getElementById('profileGuardian').textContent = profile.guardian_id ? `Guardian #${profile.guardian_id} (Active)` : 'Not Linked';
+      
+      document.getElementById('guardianFlowPhone').textContent = profile.phone || 'your phone number';
+      
+      // Populate profile update inputs
+      document.getElementById('uName').value = profile.name;
+      document.getElementById('uPhone').value = profile.phone || '';
+    }
+
+    // ── Fetch emergency contacts ──────────────────────────────
+    async function loadContactsData() {
+      const contacts = await getContacts();
+      const listEl = document.getElementById('contactsList');
+      listEl.innerHTML = '';
+
+      if (!contacts || contacts.error) {
+        listEl.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 10px;">Error loading contacts</div>';
+        return;
+      }
+
+      if (contacts.length === 0) {
+        listEl.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 20px; font-size: 0.85rem;">No emergency contacts added yet. Add one below!</div>';
+        return;
+      }
+
+      contacts.forEach(c => {
+        const primaryBadge = c.is_primary ? `<span class="badge primary">PRIMARY</span>` : '';
+        const relationBadge = c.relation ? `<span class="badge relation">${c.relation}</span>` : '';
+        
+        const card = document.createElement('div');
+        card.className = 'contact-card';
+        card.innerHTML = `
+          <div class="contact-info">
+            <h5>${c.name} ${primaryBadge} ${relationBadge}</h5>
+            <p>📞 ${c.phone}</p>
+          </div>
+          <button class="delete-btn" onclick="handleDeleteContact(${c.id})">🗑️</button>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    // ── Check if there is an active alert already ─────────────
+    async function checkActiveAlert() {
+      const alerts = await getMyAlerts();
+      if (!alerts || alerts.error) return;
+
+      const activeAlert = alerts.find(a => a.status === 'active');
+      if (activeAlert) {
+        currentActiveAlertId = activeAlert.id;
+        alertStartTime = new Date(activeAlert.timestamp);
+        enterActiveSOSMode();
+      }
+    }
+
+    // ── SOS Activation flow ──────────────────────────────────
+    function triggerSOSFlow() {
+      // Start 3s countdown before creating alert
+      const overlay = document.getElementById('countdownOverlay');
+      overlay.classList.add('show');
+      countdownTime = 3;
+      document.getElementById('countdownNumber').textContent = countdownTime;
+      
+      countdownInterval = setInterval(async () => {
+        countdownTime--;
+        if (countdownTime <= 0) {
+          clearInterval(countdownInterval);
+          overlay.classList.remove('show');
+          // Actually fire the SOS API
+          await fireSOSAlert();
+        } else {
+          document.getElementById('countdownNumber').textContent = countdownTime;
+        }
+      }, 1000);
+    }
+
+    function cancelCountdown() {
+      clearInterval(countdownInterval);
+      document.getElementById('countdownOverlay').classList.remove('show');
+    }
+
+    async function fireSOSAlert() {
+      // Call POST /alerts with some mock coords or browser location
+      let lat = 12.9716; // default Bangalore
+      let lng = 77.5946;
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            lat = pos.coords.latitude;
+            lng = pos.coords.longitude;
+            await sendAlertAPI(lat, lng);
+          },
+          async () => {
+            await sendAlertAPI(lat, lng); // fallback
+          }
+        );
+      } else {
+        await sendAlertAPI(lat, lng);
+      }
+    }
+
+    async function sendAlertAPI(lat, lng) {
+      const res = await createAlert({ latitude: lat, longitude: lng });
+      if (res && res.alert_id) {
+        currentActiveAlertId = res.alert_id;
+        alertStartTime = new Date();
+        enterActiveSOSMode();
+      } else {
+        alert('Failed to trigger SOS alert. Please try again.');
+      }
+    }
+
+    function enterActiveSOSMode() {
+      document.getElementById('sosOuter').classList.add('active');
+      document.getElementById('sosBadge').className = 'sos-status-badge active';
+      document.getElementById('sosBadge').innerHTML = '🚨 SOS ACTIVE — TELEMETRY BROADCASTING';
+      
+      const btn = document.getElementById('sosBtn');
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      btn.innerHTML = 'ACTIVE<span>SOS Stream Running</span>';
+      
+      document.getElementById('sosActiveHUD').style.display = 'flex';
+      document.getElementById('sosHelpText').style.display = 'none';
+
+      // Start duration timer
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (!alertStartTime) return;
+      const elapsedMs = Date.now() - alertStartTime.getTime();
+      const totalSecs = Math.floor(elapsedMs / 1000);
+      const mins = Math.floor(totalSecs / 60);
+      const secs = totalSecs % 60;
+      
+      document.getElementById('sosDurationTimer').textContent = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // ── Deactivate SOS Flow ──────────────────────────────────
+    async function deactivateSOS() {
+      if (!currentActiveAlertId) return;
+      
+      const confirmCancel = confirm('Are you sure you want to resolve and cancel this SOS emergency alert?');
+      if (!confirmCancel) return;
+
+      const note = prompt('Please enter a cancellation reason/resolution note:');
+      const res = await resolveAlert(currentActiveAlertId, note || 'Cancelled by User from Web Dashboard');
+      
+      if (res && res.status === 'resolved') {
+        exitActiveSOSMode();
+      } else {
+        alert('Failed to deactivate SOS. Please check server connection.');
+      }
+    }
+
+    function exitActiveSOSMode() {
+      if (timerInterval) clearInterval(timerInterval);
+      currentActiveAlertId = null;
+      alertStartTime = null;
+
+      document.getElementById('sosOuter').classList.remove('active');
+      document.getElementById('sosBadge').className = 'sos-status-badge inactive';
+      document.getElementById('sosBadge').innerHTML = '🛡️ SYSTEM SECURE & INACTIVE';
+      
+      const btn = document.getElementById('sosBtn');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.innerHTML = 'SOS<span>ACTIVATE ALERT</span>';
+      
+      document.getElementById('sosActiveHUD').style.display = 'none';
+      document.getElementById('sosHelpText').style.display = 'block';
+    }
+
+    // ── Add Contact Action ───────────────────────────────────
+    async function handleAddContact(e) {
+      e.preventDefault();
+      const name = document.getElementById('cName').value.trim();
+      const phone = document.getElementById('cPhone').value.trim();
+      const relation = document.getElementById('cRelation').value.trim();
+      const is_primary = document.getElementById('cPrimary').checked;
+
+      if (!name || !phone) {
+        alert('Name and Phone are required.');
+        return;
+      }
+
+      const res = await addContact({ name, phone, relation, is_primary });
+      if (res && !res.error) {
+        document.getElementById('addContactForm').reset();
+        await loadContactsData();
+      } else {
+        alert('Failed to add contact: ' + (res?.error || 'Unknown error'));
+      }
+    }
+
+    // ── Delete Contact Action ────────────────────────────────
+    async function handleDeleteContact(id) {
+      const confirmDelete = confirm('Are you sure you want to delete this emergency contact?');
+      if (!confirmDelete) return;
+
+      const res = await deleteContact(id);
+      if (res && (res.success || !res.error)) {
+        await loadContactsData();
+      } else {
+        alert('Failed to delete contact: ' + (res?.error || 'Unknown error'));
+      }
+    }
+
+    // ── Update Profile Action ────────────────────────────────
+    async function handleUpdateProfile(e) {
+      e.preventDefault();
+      const name = document.getElementById('uName').value.trim();
+      const phone = document.getElementById('uPhone').value.trim();
+
+      if (!name || !phone) {
+        alert('Name and Phone are required.');
+        return;
+      }
+
+      const res = await updateProfile({ name, phone });
+      if (res && !res.error) {
+        alert('Profile information updated successfully!');
+        await loadProfileData();
+      } else {
+        alert('Failed to update profile: ' + (res?.error || 'Unknown error'));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ package com.kali.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -18,16 +18,29 @@ import com.kali.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
+import org.osmdroid.views.MapView;
 
 public final class ActivityTrackingBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final RelativeLayout rootView;
+
+  @NonNull
+  public final ImageButton btnCallTarget;
 
   @NonNull
   public final ImageButton btnExitDashboard;
 
   @NonNull
-  public final RelativeLayout layoutToolbar;
+  public final Button btnResolveAlert;
+
+  @NonNull
+  public final LinearLayout layoutBottomCard;
+
+  @NonNull
+  public final LinearLayout layoutTopCard;
+
+  @NonNull
+  public final MapView mapView;
 
   @NonNull
   public final ProgressBar pbLoading;
@@ -36,27 +49,51 @@ public final class ActivityTrackingBinding implements ViewBinding {
   public final TextView tvDashboardTitle;
 
   @NonNull
-  public final View viewStatusLight;
+  public final TextView tvTargetName;
 
   @NonNull
-  public final WebView webViewDashboard;
+  public final TextView tvTelemetryBearing;
 
-  private ActivityTrackingBinding(@NonNull LinearLayout rootView,
-      @NonNull ImageButton btnExitDashboard, @NonNull RelativeLayout layoutToolbar,
-      @NonNull ProgressBar pbLoading, @NonNull TextView tvDashboardTitle,
-      @NonNull View viewStatusLight, @NonNull WebView webViewDashboard) {
+  @NonNull
+  public final TextView tvTelemetryDistance;
+
+  @NonNull
+  public final TextView tvTelemetryEta;
+
+  @NonNull
+  public final TextView tvTelemetrySpeed;
+
+  @NonNull
+  public final View viewStatusLight;
+
+  private ActivityTrackingBinding(@NonNull RelativeLayout rootView,
+      @NonNull ImageButton btnCallTarget, @NonNull ImageButton btnExitDashboard,
+      @NonNull Button btnResolveAlert, @NonNull LinearLayout layoutBottomCard,
+      @NonNull LinearLayout layoutTopCard, @NonNull MapView mapView, @NonNull ProgressBar pbLoading,
+      @NonNull TextView tvDashboardTitle, @NonNull TextView tvTargetName,
+      @NonNull TextView tvTelemetryBearing, @NonNull TextView tvTelemetryDistance,
+      @NonNull TextView tvTelemetryEta, @NonNull TextView tvTelemetrySpeed,
+      @NonNull View viewStatusLight) {
     this.rootView = rootView;
+    this.btnCallTarget = btnCallTarget;
     this.btnExitDashboard = btnExitDashboard;
-    this.layoutToolbar = layoutToolbar;
+    this.btnResolveAlert = btnResolveAlert;
+    this.layoutBottomCard = layoutBottomCard;
+    this.layoutTopCard = layoutTopCard;
+    this.mapView = mapView;
     this.pbLoading = pbLoading;
     this.tvDashboardTitle = tvDashboardTitle;
+    this.tvTargetName = tvTargetName;
+    this.tvTelemetryBearing = tvTelemetryBearing;
+    this.tvTelemetryDistance = tvTelemetryDistance;
+    this.tvTelemetryEta = tvTelemetryEta;
+    this.tvTelemetrySpeed = tvTelemetrySpeed;
     this.viewStatusLight = viewStatusLight;
-    this.webViewDashboard = webViewDashboard;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public RelativeLayout getRoot() {
     return rootView;
   }
 
@@ -81,15 +118,39 @@ public final class ActivityTrackingBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnCallTarget;
+      ImageButton btnCallTarget = ViewBindings.findChildViewById(rootView, id);
+      if (btnCallTarget == null) {
+        break missingId;
+      }
+
       id = R.id.btnExitDashboard;
       ImageButton btnExitDashboard = ViewBindings.findChildViewById(rootView, id);
       if (btnExitDashboard == null) {
         break missingId;
       }
 
-      id = R.id.layoutToolbar;
-      RelativeLayout layoutToolbar = ViewBindings.findChildViewById(rootView, id);
-      if (layoutToolbar == null) {
+      id = R.id.btnResolveAlert;
+      Button btnResolveAlert = ViewBindings.findChildViewById(rootView, id);
+      if (btnResolveAlert == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutBottomCard;
+      LinearLayout layoutBottomCard = ViewBindings.findChildViewById(rootView, id);
+      if (layoutBottomCard == null) {
+        break missingId;
+      }
+
+      id = R.id.layoutTopCard;
+      LinearLayout layoutTopCard = ViewBindings.findChildViewById(rootView, id);
+      if (layoutTopCard == null) {
+        break missingId;
+      }
+
+      id = R.id.mapView;
+      MapView mapView = ViewBindings.findChildViewById(rootView, id);
+      if (mapView == null) {
         break missingId;
       }
 
@@ -105,20 +166,46 @@ public final class ActivityTrackingBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvTargetName;
+      TextView tvTargetName = ViewBindings.findChildViewById(rootView, id);
+      if (tvTargetName == null) {
+        break missingId;
+      }
+
+      id = R.id.tvTelemetryBearing;
+      TextView tvTelemetryBearing = ViewBindings.findChildViewById(rootView, id);
+      if (tvTelemetryBearing == null) {
+        break missingId;
+      }
+
+      id = R.id.tvTelemetryDistance;
+      TextView tvTelemetryDistance = ViewBindings.findChildViewById(rootView, id);
+      if (tvTelemetryDistance == null) {
+        break missingId;
+      }
+
+      id = R.id.tvTelemetryEta;
+      TextView tvTelemetryEta = ViewBindings.findChildViewById(rootView, id);
+      if (tvTelemetryEta == null) {
+        break missingId;
+      }
+
+      id = R.id.tvTelemetrySpeed;
+      TextView tvTelemetrySpeed = ViewBindings.findChildViewById(rootView, id);
+      if (tvTelemetrySpeed == null) {
+        break missingId;
+      }
+
       id = R.id.viewStatusLight;
       View viewStatusLight = ViewBindings.findChildViewById(rootView, id);
       if (viewStatusLight == null) {
         break missingId;
       }
 
-      id = R.id.webViewDashboard;
-      WebView webViewDashboard = ViewBindings.findChildViewById(rootView, id);
-      if (webViewDashboard == null) {
-        break missingId;
-      }
-
-      return new ActivityTrackingBinding((LinearLayout) rootView, btnExitDashboard, layoutToolbar,
-          pbLoading, tvDashboardTitle, viewStatusLight, webViewDashboard);
+      return new ActivityTrackingBinding((RelativeLayout) rootView, btnCallTarget, btnExitDashboard,
+          btnResolveAlert, layoutBottomCard, layoutTopCard, mapView, pbLoading, tvDashboardTitle,
+          tvTargetName, tvTelemetryBearing, tvTelemetryDistance, tvTelemetryEta, tvTelemetrySpeed,
+          viewStatusLight);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
