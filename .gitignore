@@ -1,0 +1,27 @@
+# ── Android ──────────────────────────────────────────────
+Kali-Android/.gradle/
+Kali-Android/app/build/
+Kali-Android/build/
+Kali-Android/local.properties
+Kali-Android/*.apk
+Kali-Android/*.aab
+Kali-Android/*.keystore
+
+# ── Node.js Backend ───────────────────────────────────────
+Kali-Backend/node_modules/
+Kali-Backend/.env
+Kali-Backend/uploads/
+Kali-Backend/kali.db
+Kali-Backend/*.log
+
+# ── OS & IDE ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+
+# ── Misc ──────────────────────────────────────────────────
+*.jpg
+*.png
+Doc/
