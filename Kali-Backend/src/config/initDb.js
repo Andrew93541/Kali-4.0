@@ -5,7 +5,7 @@ async function initDb() {
   // Core users table with guardian_id + fcm_token
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name VARCHAR(100),
       email VARCHAR(100) UNIQUE NOT NULL,
       phone VARCHAR(20),
@@ -19,7 +19,7 @@ async function initDb() {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS alerts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       user_id INT,
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       status VARCHAR(20) DEFAULT 'active',
@@ -30,7 +30,7 @@ async function initDb() {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS locations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       alert_id INT,
       latitude REAL,
       longitude REAL,
@@ -41,7 +41,7 @@ async function initDb() {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS media (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       alert_id INT,
       file_url TEXT,
       media_type VARCHAR(10),
@@ -53,7 +53,7 @@ async function initDb() {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS emergency_contacts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       user_id INT,
       name VARCHAR(100) NOT NULL,
       phone VARCHAR(20) NOT NULL,
@@ -65,7 +65,7 @@ async function initDb() {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS audit_log (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       alert_id INT,
       action VARCHAR(100),
       user_id INT,
